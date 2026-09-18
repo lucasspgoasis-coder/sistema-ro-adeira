@@ -15,7 +15,7 @@
                         brand: {
                             50: '#fff7ed',
                             100: '#ffedd5',
-                            500: '#f97316', // Orange theme for equipment
+                            500: '#f97316', // Orange theme
                             600: '#ea580c',
                             700: '#c2410c',
                             800: '#9a3412',
@@ -40,6 +40,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    
+    <!-- Libraries for Export (PDF and HTML-to-Image) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -62,11 +66,9 @@
     <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <!-- Brand / Logo -->
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-xl bg-brand-500 flex items-center justify-center shadow-inner">
-                        <i class="fa-solid fa-fan text-white text-xl"></i>
-                    </div>
+                    <!-- Updated Logo Sem Contorno -->
+                    <img src="https://i.imgur.com/bEBkelG.png" alt="Logo" class="w-12 h-12 object-contain">
                     <div>
                         <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
                             Registro de Uso da Roçadeira
@@ -80,11 +82,16 @@
                     </div>
                 </div>
 
-                <!-- Global Action Buttons -->
                 <div class="flex items-center gap-2">
+                    <!-- Export Button -->
+                    <button onclick="openExportModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-semibold rounded-lg transition duration-200 flex items-center gap-2 shadow-sm">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Exportar Relatório</span>
+                    </button>
+                    <!-- Sync Button -->
                     <button onclick="loadSpreadsheetData()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 active:bg-slate-950 text-white text-xs font-semibold rounded-lg transition duration-200 flex items-center gap-2 border border-slate-700 shadow-sm">
                         <i class="fa-solid fa-rotate-right"></i>
-                        <span>Sincronizar Dados</span>
+                        <span>Sincronizar</span>
                     </button>
                 </div>
             </div>
@@ -93,14 +100,59 @@
         <!-- Navigation Tabs -->
         <div class="bg-slate-950 border-t border-slate-800">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <nav class="flex space-x-2 sm:space-x-4 overflow-x-auto py-3 scrollbar-none text-sm font-medium">
+                <nav class="flex space-x-2 sm:space-x-4 overflow-x-auto py-3 custom-scrollbar text-sm font-medium">
                     <button id="tabBtn-gerais" onclick="switchTab('gerais')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap bg-brand-600 text-white shadow-md">
                         <i class="fa-solid fa-chart-pie text-brand-100"></i> <span>Dados Gerais</span>
+                    </button>
+                    <button id="tabBtn-comparativo" onclick="switchTab('comparativo')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:bg-slate-800 hover:text-white">
+                        <i class="fa-solid fa-scale-balanced"></i> <span>Comparativo</span>
+                    </button>
+                    <button id="tabBtn-manuseio" onclick="switchTab('manuseio')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:bg-slate-800 hover:text-white">
+                        <i class="fa-solid fa-people-carry-box"></i> <span>Manuseio</span>
                     </button>
                     <button id="tabBtn-tabela" onclick="switchTab('tabela')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:bg-slate-800 hover:text-white">
                         <i class="fa-solid fa-table-list"></i> <span>Tabela de Registros</span>
                     </button>
                 </nav>
+            </div>
+        </div>
+
+        <!-- Global Filters Bar -->
+        <div class="bg-slate-900 border-t border-slate-800 shadow-inner py-3">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 items-end text-xs">
+                    <div>
+                        <label class="block text-slate-400 font-medium mb-1">Data Início</label>
+                        <input type="date" id="filterDataInicio" onchange="applyFilters()" class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 font-medium mb-1">Data Fim</label>
+                        <input type="date" id="filterDataFim" onchange="applyFilters()" class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 font-medium mb-1">Bloco / Local</label>
+                        <select id="filterBloco" onchange="applyFilters()" class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                            <option value="">Todos os Blocos</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 font-medium mb-1">Semana</label>
+                        <select id="filterSemana" onchange="applyFilters()" class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                            <option value="">Todas as Semanas</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 font-medium mb-1">Roçadeira</label>
+                        <select id="filterEquipamento" onchange="applyFilters()" class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                            <option value="">Todas as Roçadeiras</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button onclick="clearFilters()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-semibold py-1.5 px-3 rounded-lg transition border border-slate-700 flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-filter-circle-xmark"></i> Limpar Filtros
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -110,115 +162,202 @@
 
         <!-- TAB 1: DADOS GERAIS -->
         <div id="tabContent-gerais" class="tab-content active space-y-6">
-            
-            <!-- Cards de KPIs (Campos Gerais) -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- KPI 1: Total Tempo Usado -->
-                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 relative overflow-hidden group hover:border-brand-300 transition-colors">
+                <!-- KPI 1: Tempo Total Segmentado (Manhã e Tarde) -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full -mr-8 -mt-8 z-0"></div>
                     <div class="relative z-10">
-                        <div class="flex items-center gap-4 mb-4">
-                            <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl shadow-inner">
-                                <i class="fa-solid fa-stopwatch"></i>
+                        <div class="flex items-center gap-4 mb-3">
+                            <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl shadow-inner"><i class="fa-solid fa-stopwatch"></i></div>
+                            <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Tempo Total de Uso</h3>
+                        </div>
+                        <div class="flex flex-col">
+                            <span id="kpiTotalTempo" class="text-3xl font-black text-slate-800">0 h 0 min</span>
+                            <div class="flex items-center gap-3 mt-2">
+                                <span class="text-xs font-semibold bg-amber-50 text-amber-600 px-2.5 py-1 rounded-md border border-amber-100 flex items-center gap-1">
+                                    <i class="fa-solid fa-sun"></i> Manhã: <span id="kpiTempoManha" class="font-bold">0 h 0 min</span>
+                                </span>
+                                <span class="text-xs font-semibold bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-md border border-indigo-100 flex items-center gap-1">
+                                    <i class="fa-solid fa-moon"></i> Tarde: <span id="kpiTempoTarde" class="font-bold">0 h 0 min</span>
+                                </span>
                             </div>
-                            <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Total Tempo Usado</h3>
                         </div>
-                        <div class="flex items-baseline gap-2">
-                            <span id="kpiTotalTempo" class="text-4xl font-black text-slate-800">0h 0m</span>
-                        </div>
-                        <p class="text-xs text-slate-400 mt-2 flex items-center gap-1 font-medium">
-                            <i class="fa-solid fa-clock-rotate-left"></i> Tempo total acumulado
-                        </p>
                     </div>
                 </div>
 
-                <!-- KPI 2: Bloco com Mais Uso -->
-                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 relative overflow-hidden group hover:border-brand-300 transition-colors">
+                <!-- KPI 2 -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-bl-full -mr-8 -mt-8 z-0"></div>
                     <div class="relative z-10">
                         <div class="flex items-center gap-4 mb-4">
-                            <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-xl shadow-inner">
-                                <i class="fa-solid fa-map-location-dot"></i>
-                            </div>
+                            <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-xl shadow-inner"><i class="fa-solid fa-map-location-dot"></i></div>
                             <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Bloco com Mais Uso</h3>
                         </div>
                         <div class="flex flex-col">
-                            <span id="kpiTopBloco" class="text-2xl font-bold text-slate-800 truncate" title="Nenhum">Nenhum</span>
-                            <span id="kpiTopBlocoTempo" class="text-lg font-bold text-emerald-600 mt-1">0h 0m</span>
+                            <span id="kpiTopBloco" class="text-2xl font-bold text-slate-800 truncate">Nenhum</span>
+                            <span id="kpiTopBlocoTempo" class="text-lg font-bold text-emerald-600 mt-1">0 h 0 min</span>
                         </div>
-                        <p class="text-xs text-slate-400 mt-2 flex items-center gap-1 font-medium">
-                            <i class="fa-solid fa-arrow-trend-up"></i> Local com maior demanda
-                        </p>
                     </div>
                 </div>
 
-                <!-- KPI 3: Roçadeira Mais Utilizada -->
-                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 relative overflow-hidden group hover:border-brand-300 transition-colors">
+                <!-- KPI 3 -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-brand-50 rounded-bl-full -mr-8 -mt-8 z-0"></div>
                     <div class="relative z-10">
                         <div class="flex items-center gap-4 mb-4">
-                            <div class="w-12 h-12 bg-brand-100 text-brand-600 rounded-xl flex items-center justify-center text-xl shadow-inner">
-                                <i class="fa-solid fa-screwdriver-wrench"></i>
-                            </div>
+                            <div class="w-12 h-12 bg-brand-100 text-brand-600 rounded-xl flex items-center justify-center text-xl shadow-inner"><i class="fa-solid fa-screwdriver-wrench"></i></div>
                             <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Roçadeira Mais Usada</h3>
                         </div>
                         <div class="flex flex-col">
-                            <span id="kpiTopEquip" class="text-2xl font-bold text-slate-800 truncate" title="Nenhuma">Nenhuma</span>
-                            <span id="kpiTopEquipTempo" class="text-lg font-bold text-brand-600 mt-1">0h 0m</span>
+                            <span id="kpiTopEquip" class="text-2xl font-bold text-slate-800 truncate">Nenhuma</span>
+                            <span id="kpiTopEquipTempo" class="text-lg font-bold text-brand-600 mt-1">0 h 0 min</span>
                         </div>
-                        <p class="text-xs text-slate-400 mt-2 flex items-center gap-1 font-medium">
-                            <i class="fa-solid fa-medal"></i> Equipamento mais exigido
-                        </p>
                     </div>
                 </div>
             </div>
 
-            <!-- Gráficos -->
+            <!-- Gráficos Dados Gerais -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
-                <!-- Gráfico 1: Tempo Usado por Bloco -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
-                    <div class="border-b border-slate-100 pb-4 mb-4 flex justify-between items-center">
-                        <div>
-                            <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                                <i class="fa-solid fa-chart-column text-emerald-500"></i> Total de Tempo por Bloco
-                            </h2>
-                            <p class="text-xs text-slate-500 mt-1">Horas totais de uso distribuídas por local (ordem alfabética)</p>
-                        </div>
-                    </div>
-                    <div class="relative h-80 w-full">
-                        <canvas id="chartBloco"></canvas>
-                    </div>
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4 border-b border-slate-100 pb-4">
+                        <i class="fa-solid fa-chart-column text-emerald-500"></i> Tempo por Bloco (Alfabética)
+                    </h2>
+                    <div class="relative h-80 w-full"><canvas id="chartBloco"></canvas></div>
                 </div>
-
-                <!-- Gráfico 2: Tempo Usado por Roçadeira -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
-                    <div class="border-b border-slate-100 pb-4 mb-4 flex justify-between items-center">
-                        <div>
-                            <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                                <i class="fa-solid fa-chart-bar text-brand-500"></i> Total de Tempo por Roçadeira
-                            </h2>
-                            <p class="text-xs text-slate-500 mt-1">Horas totais trabalhadas por equipamento (ordem alfabética)</p>
-                        </div>
-                    </div>
-                    <div class="relative h-80 w-full">
-                        <canvas id="chartEquipamento"></canvas>
-                    </div>
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4 border-b border-slate-100 pb-4">
+                        <i class="fa-solid fa-chart-bar text-brand-500"></i> Tempo por Roçadeira (Alfabética)
+                    </h2>
+                    <div class="relative h-80 w-full"><canvas id="chartEquipamento"></canvas></div>
                 </div>
-
             </div>
         </div>
 
-        <!-- TAB 2: TABELA DE REGISTROS -->
+        <!-- TAB 2: COMPARATIVO -->
+        <div id="tabContent-comparativo" class="tab-content space-y-6">
+            <!-- Campos Gerais Comparativo -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center"><i class="fa-solid fa-calendar-check"></i></div>
+                        <h3 class="text-xs font-bold text-slate-500 uppercase">Mês com Maior Uso</h3>
+                    </div>
+                    <span id="kpiCompTopMes" class="text-2xl font-bold text-slate-800">Nenhum</span>
+                    <p id="kpiCompTopMesTempo" class="text-sm font-semibold text-purple-600 mt-1">0 h 0 min</p>
+                </div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 bg-sky-100 text-sky-600 rounded-lg flex items-center justify-center"><i class="fa-solid fa-calculator"></i></div>
+                        <h3 class="text-xs font-bold text-slate-500 uppercase">Média Mensal de Uso</h3>
+                    </div>
+                    <span id="kpiCompMediaMes" class="text-2xl font-bold text-slate-800">0 h 0 min</span>
+                    <p class="text-xs text-slate-400 mt-1">Por mês trabalhado</p>
+                </div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <h3 class="text-xs font-bold text-slate-500 uppercase">Média por Registro</h3>
+                    </div>
+                    <span id="kpiCompMediaRegistro" class="text-2xl font-bold text-slate-800">0 h 0 min</span>
+                    <p class="text-xs text-slate-400 mt-1">Duração média de cada turno</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Horas por Mês -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
+                    <div class="border-b border-slate-100 pb-4 mb-4">
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-calendar-days text-purple-500"></i> Total de Horas por Mês
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">Evolução do tempo total de uso mensal</p>
+                    </div>
+                    <div class="relative h-80 w-full"><canvas id="chartMes"></canvas></div>
+                </div>
+
+                <!-- NOVO: Horas por Bloco e Semana -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
+                    <div class="border-b border-slate-100 pb-4 mb-4">
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-layer-group text-brand-500"></i> Uso da Roçadeira por Bloco e Semana
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">Tempo total segmentado por área e demonstrado por semana</p>
+                    </div>
+                    <div class="relative h-80 w-full"><canvas id="chartBlocoSemana"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: MANUSEIO -->
+        <div id="tabContent-manuseio" class="tab-content space-y-6">
+            <!-- Campos Gerais Manuseio -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 bg-sky-100 text-sky-600 rounded-lg flex items-center justify-center"><i class="fa-solid fa-user-gear"></i></div>
+                        <h3 class="text-xs font-bold text-slate-500 uppercase">Operador Principal</h3>
+                    </div>
+                    <span id="kpiManTopOp" class="text-2xl font-bold text-slate-800 truncate block">Nenhum</span>
+                    <p id="kpiManTopOpTempo" class="text-sm font-semibold text-sky-600 mt-1">0 h 0 min</p>
+                </div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center"><i class="fa-solid fa-sun"></i></div>
+                        <h3 class="text-xs font-bold text-slate-500 uppercase">Total Período Manhã</h3>
+                    </div>
+                    <span id="kpiManTotalManha" class="text-2xl font-bold text-slate-800">0 h 0 min</span>
+                    <p id="kpiManPctManha" class="text-xs font-medium text-amber-600 mt-1">0% do total</p>
+                </div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center"><i class="fa-solid fa-moon"></i></div>
+                        <h3 class="text-xs font-bold text-slate-500 uppercase">Total Período Tarde</h3>
+                    </div>
+                    <span id="kpiManTotalTarde" class="text-2xl font-bold text-slate-800">0 h 0 min</span>
+                    <p id="kpiManPctTarde" class="text-xs font-medium text-indigo-600 mt-1">0% do total</p>
+                </div>
+            </div>
+
+            <!-- Operadores com mais uso -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
+                <div class="border-b border-slate-100 pb-4 mb-4">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-users text-sky-500"></i> Ranking de Operadores
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">Pessoas que mais utilizaram a roçadeira (Ordem Decrescente)</p>
+                </div>
+                <div class="relative h-[360px] w-full"><canvas id="chartOperador"></canvas></div>
+            </div>
+
+            <!-- Manhã vs Tarde (Em Barras) -->
+            <div class="grid grid-cols-1 gap-6">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
+                    <div class="border-b border-slate-100 pb-4 mb-4">
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-cloud-sun text-amber-500"></i> Manhã vs Tarde (Por Mês)
+                        </h2>
+                    </div>
+                    <div class="relative h-80 w-full"><canvas id="chartPeriodoMes"></canvas></div>
+                </div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
+                    <div class="border-b border-slate-100 pb-4 mb-4">
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-calendar-week text-indigo-500"></i> Manhã vs Tarde (Por Semana)
+                        </h2>
+                    </div>
+                    <div class="relative h-80 w-full"><canvas id="chartPeriodoSemana"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: TABELA DE REGISTROS -->
         <div id="tabContent-tabela" class="tab-content">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
                 <div class="p-5 border-b border-slate-100">
                     <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                         <i class="fa-solid fa-list-ul text-slate-500"></i> Detalhamento de Registros
                     </h2>
-                    <p class="text-xs text-slate-500 mt-1">Lista completa com as informações e duração de cada registro</p>
                 </div>
-
                 <div class="overflow-x-auto custom-scrollbar max-h-[600px]">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead class="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider sticky top-0 z-10 shadow-sm text-xs">
@@ -226,7 +365,7 @@
                                 <th class="p-4 border-b border-slate-200 whitespace-nowrap">Data</th>
                                 <th class="p-4 border-b border-slate-200 whitespace-nowrap">Período</th>
                                 <th class="p-4 border-b border-slate-200 whitespace-nowrap">Local / Bloco</th>
-                                <th class="p-4 border-b border-slate-200 whitespace-nowrap">Roçadeira / Equip.</th>
+                                <th class="p-4 border-b border-slate-200 whitespace-nowrap">Roçadeira</th>
                                 <th class="p-4 border-b border-slate-200 whitespace-nowrap">Operador</th>
                                 <th class="p-4 border-b border-slate-200 whitespace-nowrap">Início</th>
                                 <th class="p-4 border-b border-slate-200 whitespace-nowrap">Fim</th>
@@ -234,7 +373,7 @@
                             </tr>
                         </thead>
                         <tbody id="tableBody" class="divide-y divide-slate-100 text-slate-700">
-                            <!-- Rows injected via JS -->
+                            <!-- Injetado via JS -->
                         </tbody>
                     </table>
                 </div>
@@ -246,28 +385,74 @@
 
     </main>
 
+    <!-- Export Modal -->
+    <div id="exportModal" class="hidden fixed inset-0 z-[100] bg-slate-900/60 flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-6 shadow-2xl w-full max-w-md border border-slate-200 mx-4">
+            <h3 class="text-xl font-bold text-slate-800 mb-2">Exportar Relatório</h3>
+            <p class="text-sm text-slate-500 mb-6">Selecione o painel que deseja incluir e baixe no formato horizontal.</p>
+            
+            <div class="space-y-3 mb-8">
+                <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                    <input type="radio" name="exportSection" value="gerais" checked class="w-5 h-5 text-brand-600 border-slate-300 focus:ring-brand-500">
+                    <span class="font-medium text-slate-700"><i class="fa-solid fa-chart-pie text-brand-500 mr-2"></i> Dados Gerais</span>
+                </label>
+                <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                    <input type="radio" name="exportSection" value="comparativo" class="w-5 h-5 text-brand-600 border-slate-300 focus:ring-brand-500">
+                    <span class="font-medium text-slate-700"><i class="fa-solid fa-scale-balanced text-slate-400 mr-2"></i> Comparativo</span>
+                </label>
+                <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                    <input type="radio" name="exportSection" value="manuseio" class="w-5 h-5 text-brand-600 border-slate-300 focus:ring-brand-500">
+                    <span class="font-medium text-slate-700"><i class="fa-solid fa-people-carry-box text-slate-400 mr-2"></i> Manuseio</span>
+                </label>
+            </div>
+            
+            <div class="flex justify-end gap-3">
+                <button onclick="closeExportModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg transition text-sm">Cancelar</button>
+                <button onclick="exportReport('jpeg')" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition shadow-sm text-sm flex items-center gap-2"><i class="fa-solid fa-image"></i> Baixar JPEG</button>
+                <button onclick="exportReport('pdf')" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg transition shadow-sm text-sm flex items-center gap-2"><i class="fa-solid fa-file-pdf"></i> Baixar PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Export Template (Strict 1280x720) -->
+    <div id="exportCanvasContainer" class="fixed -left-[9999px] top-0 bg-slate-50 overflow-hidden flex flex-col font-sans" style="width: 1280px; height: 720px; z-index: -10;">
+        <div class="bg-slate-900 text-white p-6 flex items-center gap-4 border-b-4 border-brand-500" style="height: 100px;">
+            <img src="https://i.imgur.com/bEBkelG.png" class="w-14 h-14 object-contain">
+            <div>
+                <h1 class="text-3xl font-bold">Registro de Uso da Roçadeira</h1>
+                <p id="exportSubtitle" class="text-slate-300 text-sm mt-1 uppercase tracking-wider font-semibold">Relatório</p>
+            </div>
+            <div class="ml-auto text-right text-slate-400 text-sm">
+                <p>Data de Geração: <span id="exportDateLabel" class="text-white font-medium"></span></p>
+            </div>
+        </div>
+        <div class="flex-1 p-8 flex flex-col gap-6 w-full" style="height: 620px;">
+            <div id="exportKpis" class="grid grid-cols-3 gap-6" style="height: 140px;"></div>
+            <div id="exportCharts" class="grid grid-cols-2 gap-6 h-full w-full min-h-0"></div>
+        </div>
+    </div>
+
     <script>
-        // URL da Planilha modificada para gerar CSV diretamente
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR9q-T-U_fT_tP9_ZKet4ai-BG11a6eCnwyG_BrJWIG7rQ7gFbKkrjDnj_r3ptMs-BbCl-7nm5kkHcI/pub?output=csv';
         
-        let rawData = [];
+        let allRawData = [];
         let validData = [];
         
-        // Instâncias dos gráficos
+        // Instâncias de Gráficos
         let chartBlocoInst = null;
         let chartEquipInst = null;
+        let chartMesInst = null;
+        let chartBlocoSemanaInst = null;
+        let chartOperadorInst = null;
+        let chartPeriodoMesInst = null;
+        let chartPeriodoSemInst = null;
 
-        // Registrar plugin para labels nas barras
         Chart.register(ChartDataLabels);
 
-        window.onload = () => {
-            loadSpreadsheetData();
-        };
+        window.onload = () => { loadSpreadsheetData(); };
 
         function loadSpreadsheetData() {
             updateStatusBadge('syncing');
-            
-            // Adiciona timestamp para evitar cache
             const fetchUrl = `${CSV_URL}&t=${new Date().getTime()}`;
 
             Papa.parse(fetchUrl, {
@@ -277,42 +462,23 @@
                 complete: function(results) {
                     if (results.data && results.data.length > 0) {
                         processRawData(results.data);
+                        populateFilterDropdowns();
+                        applyFilters();
                         updateStatusBadge('online');
-                        updateDashboard();
                     } else {
                         updateStatusBadge('error', 'Planilha Vazia');
-                        alert("Não foram encontrados dados na planilha.");
                     }
                 },
                 error: function(err) {
-                    console.error("Erro ao ler CSV:", err);
                     updateStatusBadge('error', 'Erro de Conexão');
-                    alert("Erro ao conectar com a planilha do Google. Verifique se ela está publicada na web.");
                 }
             });
         }
 
-        function updateStatusBadge(type, customText = '') {
-            const badge = document.getElementById('syncStatusBadge');
-            if (!badge) return;
-            
-            if (type === 'syncing') {
-                badge.className = 'inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30';
-                badge.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Carregando...';
-            } else if (type === 'online') {
-                badge.className = 'inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
-                badge.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i> Conectado';
-            } else if (type === 'error') {
-                badge.className = 'inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/20 text-red-300 border border-red-500/30';
-                badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> ${customText}`;
-            }
-        }
-
         function processRawData(data) {
-            validData = [];
+            allRawData = [];
 
             data.forEach(item => {
-                // Função helper para buscar valor considerando diferentes variações do nome da coluna
                 const getVal = (keys) => {
                     for (let k of keys) {
                         for (let a in item) {
@@ -330,16 +496,59 @@
                 const inicioVal = getVal(['Inicio', 'Início', 'inicio']);
                 const fimVal = getVal(['Fim', 'fim', 'Término']);
 
-                // Pula linhas totalmente vazias ou sem informações vitais
                 if (!localVal && !equipVal && !inicioVal && !fimVal) return;
 
-                // Calcula duração em minutos
                 const durationMinutes = calcDuration(inicioVal, fimVal);
 
-                validData.push({
+                // Processamento de Datas
+                let mesStr = 'Sem Data', semStr = 'Sem Data';
+                let mesCode = 0, semCode = 0;
+                let dateIso = '';
+                
+                if (dataVal) {
+                    const parts = dataVal.split('/');
+                    if (parts.length >= 3) {
+                        const day = parseInt(parts[0], 10);
+                        const month = parseInt(parts[1], 10);
+                        let yearStr = parts[2].split(' ')[0];
+                        const year = yearStr.length <= 2 ? 2000 + parseInt(yearStr) : parseInt(yearStr, 10);
+                        
+                        if(!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                            dateIso = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                            mesStr = `${String(month).padStart(2, '0')}/${year}`;
+                            mesCode = (year * 100) + month;
+
+                            // Cálculo da Semana ISO
+                            const d = new Date(year, month - 1, day);
+                            const tdt = new Date(d.valueOf());
+                            const dayn = (d.getDay() + 6) % 7;
+                            tdt.setDate(tdt.getDate() - dayn + 3);
+                            const firstThursday = tdt.valueOf();
+                            tdt.setMonth(0, 1);
+                            if (tdt.getDay() !== 4) {
+                                tdt.setMonth(0, 1 + ((4 - tdt.getDay()) + 7) % 7);
+                            }
+                            const weekNum = 1 + Math.ceil((firstThursday - tdt) / 604800000);
+                            
+                            semStr = `Sem ${String(weekNum).padStart(2, '0')}/${year}`;
+                            semCode = (year * 100) + weekNum;
+                        }
+                    }
+                }
+
+                let periodCat = 'Outro';
+                const pLower = periodoVal.toLowerCase();
+                if (pLower.includes('manh') || pLower === 'm') periodCat = 'Manhã';
+                else if (pLower.includes('tard') || pLower === 't') periodCat = 'Tarde';
+
+                allRawData.push({
                     Data: dataVal || '-',
-                    Operador: operadorVal || '-',
+                    DateIso: dateIso,
+                    Operador: operadorVal || 'Não Informado',
                     Periodo: periodoVal || '-',
+                    PeriodoCat: periodCat,
+                    Mes: mesStr, MesCode: mesCode,
+                    Semana: semStr, SemanaCode: semCode,
                     Local: localVal || 'Não Informado',
                     Equipamento: equipVal || 'Não Informado',
                     Inicio: inicioVal || '-',
@@ -349,39 +558,100 @@
             });
         }
 
-        // Converte string "HH:MM" para minutos e calcula a diferença
+        function populateFilterDropdowns() {
+            const blocos = new Set();
+            const semanas = new Set();
+            const equipamentos = new Set();
+
+            allRawData.forEach(r => {
+                if (r.Local && r.Local !== 'Não Informado') blocos.add(r.Local);
+                if (r.Semana && r.Semana !== 'Sem Data') semanas.add(r.Semana);
+                if (r.Equipamento && r.Equipamento !== 'Não Informado') equipamentos.add(r.Equipamento);
+            });
+
+            const fillSelect = (id, items) => {
+                const s = document.getElementById(id);
+                if (!s) return;
+                const currentVal = s.value;
+                s.innerHTML = s.options[0].outerHTML; 
+                Array.from(items).sort().forEach(val => {
+                    const opt = document.createElement('option');
+                    opt.value = val;
+                    opt.textContent = val;
+                    s.appendChild(opt);
+                });
+                s.value = currentVal;
+            };
+
+            fillSelect('filterBloco', blocos);
+            fillSelect('filterSemana', semanas);
+            fillSelect('filterEquipamento', equipamentos);
+        }
+
+        function applyFilters() {
+            const dInicio = document.getElementById('filterDataInicio')?.value;
+            const dFim = document.getElementById('filterDataFim')?.value;
+            const bloco = document.getElementById('filterBloco')?.value;
+            const semana = document.getElementById('filterSemana')?.value;
+            const equip = document.getElementById('filterEquipamento')?.value;
+
+            validData = allRawData.filter(r => {
+                if (dInicio && r.DateIso && r.DateIso < dInicio) return false;
+                if (dFim && r.DateIso && r.DateIso > dFim) return false;
+                if (bloco && r.Local !== bloco) return false;
+                if (semana && r.Semana !== semana) return false;
+                if (equip && r.Equipamento !== equip) return false;
+                return true;
+            });
+
+            updateDashboard();
+        }
+
+        function clearFilters() {
+            if (document.getElementById('filterDataInicio')) document.getElementById('filterDataInicio').value = '';
+            if (document.getElementById('filterDataFim')) document.getElementById('filterDataFim').value = '';
+            if (document.getElementById('filterBloco')) document.getElementById('filterBloco').value = '';
+            if (document.getElementById('filterSemana')) document.getElementById('filterSemana').value = '';
+            if (document.getElementById('filterEquipamento')) document.getElementById('filterEquipamento').value = '';
+            applyFilters();
+        }
+
         function calcDuration(inicio, fim) {
             if (!inicio || !fim || inicio === '-' || fim === '-') return 0;
-            
             try {
-                // Extrai apenas números e dois pontos, caso venha com letras
-                const cleanTime = (t) => t.replace(/[^\d:]/g, '');
-                
                 const parseToMinutes = (timeStr) => {
-                    let [h, m] = cleanTime(timeStr).split(':');
+                    let [h, m] = timeStr.replace(/[^\d:]/g, '').split(':');
                     return (parseInt(h || 0) * 60) + parseInt(m || 0);
                 };
-
                 const startMins = parseToMinutes(inicio);
                 let endMins = parseToMinutes(fim);
-
-                // Tratamento simplificado para virada de dia (se o fim for menor que inicio)
-                if (endMins < startMins) {
-                    endMins += (24 * 60); // adiciona 24 horas
-                }
-
+                if (endMins < startMins) endMins += (24 * 60); 
                 const diff = endMins - startMins;
-                return diff > 0 && diff < (24*60) ? diff : 0; // Descarta durações absurdas maiores que 24h
-            } catch (e) {
-                return 0;
-            }
+                return diff > 0 && diff < (24*60) ? diff : 0;
+            } catch (e) { return 0; }
         }
 
         function formatDuration(totalMinutes) {
-            if (totalMinutes === 0) return '0h 0m';
+            if (!totalMinutes || totalMinutes === 0) return '0 h 0 min';
             const h = Math.floor(totalMinutes / 60);
-            const m = totalMinutes % 60;
-            return `${h}h ${m}m`;
+            const m = Math.round(totalMinutes % 60);
+            return `${h} h ${m} min`;
+        }
+
+        // Formatação Exata Solicitada: "145 h 10 min"
+        function formatHMM(totalMinutes) {
+            if (!totalMinutes || totalMinutes === 0) return '';
+            const h = Math.floor(totalMinutes / 60);
+            const m = Math.round(totalMinutes % 60);
+            return `${h} h ${m} min`;
+        }
+
+        function updateStatusBadge(type, customText = '') {
+            const b = document.getElementById('syncStatusBadge');
+            if (!b) return;
+            if (type === 'syncing') b.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Carregando...';
+            else if (type === 'online') b.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i> Conectado';
+            else if (type === 'error') b.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> ${customText}`;
         }
 
         function updateDashboard() {
@@ -392,170 +662,279 @@
 
         function updateKPIs() {
             let totalMins = 0;
-            const blocosMap = {};
-            const equipMap = {};
+            let totalManhaMins = 0;
+            let totalTardeMins = 0;
+            const blocosMap = {}, equipMap = {}, mesMap = {}, opMap = {};
 
             validData.forEach(row => {
-                const mins = row.DurationMinutes;
-                totalMins += mins;
+                const m = row.DurationMinutes;
+                totalMins += m;
+                if (m > 0) {
+                    blocosMap[row.Local] = (blocosMap[row.Local] || 0) + m;
+                    equipMap[row.Equipamento] = (equipMap[row.Equipamento] || 0) + m;
+                    if (row.MesCode) mesMap[row.Mes] = (mesMap[row.Mes] || 0) + m;
+                    if (row.Operador !== 'Não Informado') opMap[row.Operador] = (opMap[row.Operador] || 0) + m;
 
-                if (mins > 0) {
-                    blocosMap[row.Local] = (blocosMap[row.Local] || 0) + mins;
-                    equipMap[row.Equipamento] = (equipMap[row.Equipamento] || 0) + mins;
+                    if (row.PeriodoCat === 'Manhã') totalManhaMins += m;
+                    else if (row.PeriodoCat === 'Tarde') totalTardeMins += m;
                 }
             });
 
-            // 1. Total Tempo
+            // --- TAB 1 KPIs (Gerais) ---
             document.getElementById('kpiTotalTempo').innerText = formatDuration(totalMins);
+            document.getElementById('kpiTempoManha').innerText = formatDuration(totalManhaMins);
+            if(document.getElementById('kpiTempoTarde')) document.getElementById('kpiTempoTarde').innerText = formatDuration(totalTardeMins);
 
-            // 2. Bloco com mais uso
-            let topBloco = 'Nenhum', maxBlocoMins = 0;
-            for (let b in blocosMap) {
-                if (blocosMap[b] > maxBlocoMins) {
-                    maxBlocoMins = blocosMap[b];
-                    topBloco = b;
-                }
-            }
-            document.getElementById('kpiTopBloco').innerText = topBloco;
-            document.getElementById('kpiTopBloco').title = topBloco;
-            document.getElementById('kpiTopBlocoTempo').innerText = formatDuration(maxBlocoMins);
+            let topB = 'Nenhum', maxB = 0;
+            for (let b in blocosMap) if (blocosMap[b] > maxB) { maxB = blocosMap[b]; topB = b; }
+            document.getElementById('kpiTopBloco').innerText = topB;
+            document.getElementById('kpiTopBlocoTempo').innerText = formatDuration(maxB);
 
-            // 3. Roçadeira mais usada
-            let topEquip = 'Nenhuma', maxEquipMins = 0;
-            for (let e in equipMap) {
-                if (equipMap[e] > maxEquipMins) {
-                    maxEquipMins = equipMap[e];
-                    topEquip = e;
-                }
-            }
-            document.getElementById('kpiTopEquip').innerText = topEquip;
-            document.getElementById('kpiTopEquip').title = topEquip;
-            document.getElementById('kpiTopEquipTempo').innerText = formatDuration(maxEquipMins);
+            let topE = 'Nenhuma', maxE = 0;
+            for (let e in equipMap) if (equipMap[e] > maxE) { maxE = equipMap[e]; topE = e; }
+            document.getElementById('kpiTopEquip').innerText = topE;
+            document.getElementById('kpiTopEquipTempo').innerText = formatDuration(maxE);
+
+            // --- TAB 2 KPIs (Comparativo) ---
+            let topMes = 'Nenhum', maxMes = 0;
+            let countMeses = Object.keys(mesMap).length;
+            for (let m in mesMap) if (mesMap[m] > maxMes) { maxMes = mesMap[m]; topMes = m; }
+            document.getElementById('kpiCompTopMes').innerText = topMes;
+            document.getElementById('kpiCompTopMesTempo').innerText = formatDuration(maxMes);
+            
+            let avgMesMins = countMeses > 0 ? Math.round(totalMins / countMeses) : 0;
+            document.getElementById('kpiCompMediaMes').innerText = formatDuration(avgMesMins);
+
+            let validRowsCount = validData.filter(r => r.DurationMinutes > 0).length;
+            let avgRegMins = validRowsCount > 0 ? Math.round(totalMins / validRowsCount) : 0;
+            document.getElementById('kpiCompMediaRegistro').innerText = formatDuration(avgRegMins);
+
+            // --- TAB 3 KPIs (Manuseio) ---
+            let topOp = 'Nenhum', maxOp = 0;
+            for (let o in opMap) if (opMap[o] > maxOp) { maxOp = opMap[o]; topOp = o; }
+            document.getElementById('kpiManTopOp').innerText = topOp;
+            document.getElementById('kpiManTopOpTempo').innerText = formatDuration(maxOp);
+
+            document.getElementById('kpiManTotalManha').innerText = formatDuration(totalManhaMins);
+            document.getElementById('kpiManTotalTarde').innerText = formatDuration(totalTardeMins);
+
+            let pctM = totalMins > 0 ? Math.round((totalManhaMins / totalMins) * 100) : 0;
+            let pctT = totalMins > 0 ? Math.round((totalTardeMins / totalMins) * 100) : 0;
+            document.getElementById('kpiManPctManha').innerText = `${pctM}% do total`;
+            document.getElementById('kpiManPctTarde').innerText = `${pctT}% do total`;
         }
 
         function renderCharts() {
-            // Agrupamento de Dados
-            const blocosData = {};
-            const equipData = {};
+            const chartDefaults = {
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: { label: (ctx) => ` ${formatHMM(Math.round(ctx.raw * 60))}` }
+                    },
+                    datalabels: {
+                        anchor: 'end', 
+                        align: 'top', 
+                        color: '#475569', 
+                        font: { weight: 'bold', size: 10 },
+                        clip: false,
+                        formatter: (val) => val === 0 ? '' : formatHMM(Math.round(val * 60))
+                    }
+                },
+                maintainAspectRatio: false,
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        grace: '15%',
+                        title: { display: true, text: 'Horas' }, 
+                        grid: { color: '#f1f5f9' } 
+                    },
+                    x: { grid: { display: false } }
+                }
+            };
+
+            const blocosData = {}, equipData = {};
+            const mesData = {};
+            const opData = {};
+            const periodoMesData = {};
+            const periodoSemData = {};
+            const blocoSemanaData = {}; // Para o novo gráfico de blocos agrupados por semana
+            const allBlocosChart = new Set();
 
             validData.forEach(r => {
                 if (r.DurationMinutes > 0) {
                     blocosData[r.Local] = (blocosData[r.Local] || 0) + r.DurationMinutes;
                     equipData[r.Equipamento] = (equipData[r.Equipamento] || 0) + r.DurationMinutes;
+                    
+                    if (r.MesCode) {
+                        if(!mesData[r.MesCode]) mesData[r.MesCode] = { label: r.Mes, total: 0 };
+                        mesData[r.MesCode].total += r.DurationMinutes;
+
+                        if(!periodoMesData[r.MesCode]) periodoMesData[r.MesCode] = { label: r.Mes, manha: 0, tarde: 0 };
+                        if(r.PeriodoCat === 'Manhã') periodoMesData[r.MesCode].manha += r.DurationMinutes;
+                        else if(r.PeriodoCat === 'Tarde') periodoMesData[r.MesCode].tarde += r.DurationMinutes;
+                    }
+
+                    if (r.SemanaCode) {
+                        if(!periodoSemData[r.SemanaCode]) periodoSemData[r.SemanaCode] = { label: r.Semana, manha: 0, tarde: 0 };
+                        if(r.PeriodoCat === 'Manhã') periodoSemData[r.SemanaCode].manha += r.DurationMinutes;
+                        else if(r.PeriodoCat === 'Tarde') periodoSemData[r.SemanaCode].tarde += r.DurationMinutes;
+                        
+                        // Populando dados para o novo Gráfico de Blocos vs Semana
+                        if(!blocoSemanaData[r.SemanaCode]) blocoSemanaData[r.SemanaCode] = { label: r.Semana, blocos: {} };
+                        blocoSemanaData[r.SemanaCode].blocos[r.Local] = (blocoSemanaData[r.SemanaCode].blocos[r.Local] || 0) + r.DurationMinutes;
+                        allBlocosChart.add(r.Local);
+                    }
+
+                    if(r.Operador !== 'Não Informado') opData[r.Operador] = (opData[r.Operador] || 0) + r.DurationMinutes;
                 }
             });
 
-            // Ordenação Alfabética para Blocos
-            const blocosKeysSorted = Object.keys(blocosData).sort((a, b) => a.localeCompare(b));
-            const blocosLabels = blocosKeysSorted;
-            // Converter minutos para horas fracionadas para o gráfico (ex: 90min = 1.5h)
-            const blocosValues = blocosKeysSorted.map(k => parseFloat((blocosData[k] / 60).toFixed(2)));
-
-            // Ordenação Alfabética para Equipamentos
-            const equipKeysSorted = Object.keys(equipData).sort((a, b) => a.localeCompare(b));
-            const equipLabels = equipKeysSorted;
-            const equipValues = equipKeysSorted.map(k => parseFloat((equipData[k] / 60).toFixed(2)));
-
-            // Formatter para Tooltip e DataLabels
-            const tooltipFormatter = function(context) {
-                const val = context.raw; // horas decimais
-                const totalMins = Math.round(val * 60);
-                return ` ${formatDuration(totalMins)} (${val} hrs)`;
-            };
-
-            const dataLabelFormatter = function(value) {
-                if(value === 0) return '';
-                const totalMins = Math.round(value * 60);
-                return formatDuration(totalMins);
-            };
-
-            // Gráfico 1: Bloco
-            const ctxBloco = document.getElementById('chartBloco');
-            if (chartBlocoInst) chartBlocoInst.destroy();
-            chartBlocoInst = new Chart(ctxBloco, {
+            // 1. DADOS GERAIS: Tempo por Bloco
+            const bKeys = Object.keys(blocosData).sort();
+            if(chartBlocoInst) chartBlocoInst.destroy();
+            chartBlocoInst = new Chart(document.getElementById('chartBloco'), {
                 type: 'bar',
                 data: {
-                    labels: blocosLabels,
+                    labels: bKeys,
                     datasets: [{
-                        label: 'Tempo (Horas)',
-                        data: blocosValues,
-                        backgroundColor: '#10b981', // Emerald 500
-                        borderRadius: 6,
-                        borderWidth: 0,
+                        data: bKeys.map(k => parseFloat((blocosData[k]/60).toFixed(2))),
+                        backgroundColor: '#10b981', borderRadius: 6
                     }]
                 },
+                options: chartDefaults
+            });
+
+            // 2. DADOS GERAIS: Tempo por Equipamento
+            const eKeys = Object.keys(equipData).sort();
+            if(chartEquipInst) chartEquipInst.destroy();
+            chartEquipInst = new Chart(document.getElementById('chartEquipamento'), {
+                type: 'bar',
+                data: {
+                    labels: eKeys,
+                    datasets: [{
+                        data: eKeys.map(k => parseFloat((equipData[k]/60).toFixed(2))),
+                        backgroundColor: '#f97316', borderRadius: 6
+                    }]
+                },
+                options: chartDefaults
+            });
+
+            // 3. COMPARATIVO: Tempo por Mês
+            const mesKeys = Object.keys(mesData).sort((a,b) => a - b);
+            if(chartMesInst) chartMesInst.destroy();
+            chartMesInst = new Chart(document.getElementById('chartMes'), {
+                type: 'bar',
+                data: {
+                    labels: mesKeys.map(k => mesData[k].label),
+                    datasets: [{
+                        data: mesKeys.map(k => parseFloat((mesData[k].total/60).toFixed(2))),
+                        backgroundColor: '#a855f7', borderRadius: 6
+                    }]
+                },
+                options: chartDefaults
+            });
+
+            // 4. COMPARATIVO: NOVO Gráfico - Uso por Bloco e Semana (Stacked)
+            const bsKeys = Object.keys(blocoSemanaData).sort((a,b) => a - b);
+            const labelsBS = bsKeys.map(k => blocoSemanaData[k].label);
+            const blocosArray = Array.from(allBlocosChart).sort();
+            const colorsList = ['#f87171', '#fb923c', '#facc15', '#a3e635', '#34d399', '#2dd4bf', '#38bdf8', '#818cf8', '#a78bfa', '#e879f9'];
+
+            const datasetsBS = blocosArray.map((bName, idx) => ({
+                label: bName,
+                data: bsKeys.map(k => parseFloat(((blocoSemanaData[k].blocos[bName]||0)/60).toFixed(2))),
+                backgroundColor: colorsList[idx % colorsList.length],
+                borderRadius: 4
+            }));
+
+            if(chartBlocoSemanaInst) chartBlocoSemanaInst.destroy();
+            chartBlocoSemanaInst = new Chart(document.getElementById('chartBlocoSemana'), {
+                type: 'bar',
+                data: { labels: labelsBS, datasets: datasetsBS },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    ...chartDefaults,
                     plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: { label: tooltipFormatter }
-                        },
+                        ...chartDefaults.plugins,
+                        legend: { display: true, position: 'top', labels: { boxWidth: 12 } },
                         datalabels: {
-                            anchor: 'end', align: 'top',
-                            formatter: dataLabelFormatter,
-                            font: { weight: 'bold', size: 11 },
-                            color: '#475569'
+                            color: '#ffffff',
+                            font: { weight: 'bold', size: 9 },
+                            anchor: 'center', align: 'center',
+                            formatter: (val) => val === 0 ? '' : formatHMM(Math.round(val * 60)),
+                            display: function(context) { return context.dataset.data[context.dataIndex] > 0.5; } // Evita labels em pedaços mto pequenos
                         }
                     },
                     scales: {
-                        y: { 
-                            beginAtZero: true, 
-                            title: { display: true, text: 'Horas Totais' },
-                            grid: { color: '#f1f5f9' }
-                        },
-                        x: { 
-                            grid: { display: false },
-                            ticks: { maxRotation: 45, minRotation: 0 }
-                        }
+                        x: { stacked: true, grid: { display: false } },
+                        y: { stacked: true, beginAtZero: true, title: { display: true, text: 'Horas' } }
                     }
                 }
             });
 
-            // Gráfico 2: Equipamento (Roçadeira)
-            const ctxEquip = document.getElementById('chartEquipamento');
-            if (chartEquipInst) chartEquipInst.destroy();
-            chartEquipInst = new Chart(ctxEquip, {
+            // 5. MANUSEIO: Operador (Decrescente)
+            const opKeys = Object.keys(opData).sort((a,b) => opData[b] - opData[a]);
+            if(chartOperadorInst) chartOperadorInst.destroy();
+            chartOperadorInst = new Chart(document.getElementById('chartOperador'), {
                 type: 'bar',
                 data: {
-                    labels: equipLabels,
+                    labels: opKeys,
                     datasets: [{
-                        label: 'Tempo (Horas)',
-                        data: equipValues,
-                        backgroundColor: '#f97316', // Orange 500
-                        borderRadius: 6,
-                        borderWidth: 0,
+                        data: opKeys.map(k => parseFloat((opData[k]/60).toFixed(2))),
+                        backgroundColor: '#38bdf8', borderRadius: 6
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    indexAxis: 'x', // Mantido como vertical, ou mude para 'y' para horizontal
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: { label: tooltipFormatter }
+                options: chartDefaults
+            });
+
+            // Config para Gráficos de Período em Barras
+            const periodBarOptions = JSON.parse(JSON.stringify(chartDefaults));
+            periodBarOptions.plugins.legend = { display: true, position: 'top' };
+            periodBarOptions.plugins.datalabels.formatter = (val) => val === 0 ? '' : formatHMM(Math.round(val * 60)); // Aplicando formatação 145 h 10 min
+
+            // 6. MANUSEIO: Manhã vs Tarde (Por Mês) - BARRAS
+            const pmKeys = Object.keys(periodoMesData).sort((a,b) => a - b);
+            if(chartPeriodoMesInst) chartPeriodoMesInst.destroy();
+            chartPeriodoMesInst = new Chart(document.getElementById('chartPeriodoMes'), {
+                type: 'bar',
+                data: {
+                    labels: pmKeys.map(k => periodoMesData[k].label),
+                    datasets: [
+                        {
+                            label: 'Manhã',
+                            data: pmKeys.map(k => parseFloat((periodoMesData[k].manha/60).toFixed(2))),
+                            backgroundColor: '#fbbf24', borderRadius: 4
                         },
-                        datalabels: {
-                            anchor: 'end', align: 'top',
-                            formatter: dataLabelFormatter,
-                            font: { weight: 'bold', size: 11 },
-                            color: '#475569'
+                        {
+                            label: 'Tarde',
+                            data: pmKeys.map(k => parseFloat((periodoMesData[k].tarde/60).toFixed(2))),
+                            backgroundColor: '#6366f1', borderRadius: 4
                         }
-                    },
-                    scales: {
-                        y: { 
-                            beginAtZero: true, 
-                            title: { display: true, text: 'Horas Totais' },
-                            grid: { color: '#f1f5f9' }
+                    ]
+                },
+                options: periodBarOptions
+            });
+
+            // 7. MANUSEIO: Manhã vs Tarde (Por Semana) - BARRAS
+            const psKeys = Object.keys(periodoSemData).sort((a,b) => a - b);
+            if(chartPeriodoSemInst) chartPeriodoSemInst.destroy();
+            chartPeriodoSemInst = new Chart(document.getElementById('chartPeriodoSemana'), {
+                type: 'bar',
+                data: {
+                    labels: psKeys.map(k => periodoSemData[k].label),
+                    datasets: [
+                        {
+                            label: 'Manhã',
+                            data: psKeys.map(k => parseFloat((periodoSemData[k].manha/60).toFixed(2))),
+                            backgroundColor: '#fbbf24', borderRadius: 4
                         },
-                        x: { 
-                            grid: { display: false },
-                            ticks: { maxRotation: 45, minRotation: 0 }
+                        {
+                            label: 'Tarde',
+                            data: psKeys.map(k => parseFloat((periodoSemData[k].tarde/60).toFixed(2))),
+                            backgroundColor: '#6366f1', borderRadius: 4
                         }
-                    }
-                }
+                    ]
+                },
+                options: periodBarOptions
             });
         }
 
@@ -566,35 +945,30 @@
             
             validData.forEach((row, idx) => {
                 const tr = document.createElement('tr');
-                tr.className = idx % 2 === 0 ? 'bg-white hover:bg-slate-50 transition' : 'bg-slate-50/50 hover:bg-slate-100 transition';
+                tr.className = idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50';
+                const dText = row.DurationMinutes > 0 ? formatDuration(row.DurationMinutes) : '-';
                 
-                const duracaoText = row.DurationMinutes > 0 ? formatDuration(row.DurationMinutes) : '<span class="text-slate-400">Inválido/Zero</span>';
-                const duracaoClass = row.DurationMinutes > 0 ? 'text-blue-600 font-bold' : 'text-slate-400';
-
                 tr.innerHTML = `
-                    <td class="p-4 whitespace-nowrap font-medium text-slate-800">${row.Data}</td>
-                    <td class="p-4 whitespace-nowrap text-slate-600">${row.Periodo}</td>
-                    <td class="p-4 whitespace-nowrap"><span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 font-semibold rounded-md border border-emerald-100">${row.Local}</span></td>
-                    <td class="p-4 whitespace-nowrap"><span class="px-2.5 py-1 bg-brand-50 text-brand-700 font-semibold rounded-md border border-brand-100">${row.Equipamento}</span></td>
-                    <td class="p-4 whitespace-nowrap text-slate-600"><i class="fa-solid fa-user text-slate-400 mr-2 text-xs"></i>${row.Operador}</td>
-                    <td class="p-4 whitespace-nowrap text-slate-500 font-mono">${row.Inicio}</td>
-                    <td class="p-4 whitespace-nowrap text-slate-500 font-mono">${row.Fim}</td>
-                    <td class="p-4 whitespace-nowrap text-right ${duracaoClass} bg-blue-50/20">${duracaoText}</td>
+                    <td class="p-4 font-medium text-slate-800">${row.Data}</td>
+                    <td class="p-4 text-slate-600">${row.PeriodoCat} (${row.Periodo})</td>
+                    <td class="p-4"><span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 font-semibold rounded-md">${row.Local}</span></td>
+                    <td class="p-4"><span class="px-2.5 py-1 bg-brand-50 text-brand-700 font-semibold rounded-md">${row.Equipamento}</span></td>
+                    <td class="p-4 text-slate-600">${row.Operador}</td>
+                    <td class="p-4 text-slate-500">${row.Inicio}</td>
+                    <td class="p-4 text-slate-500">${row.Fim}</td>
+                    <td class="p-4 text-right font-bold text-blue-600">${dText}</td>
                 `;
                 tbody.appendChild(tr);
             });
-
             document.getElementById('tableTotalCount').innerText = validData.length;
         }
 
         function switchTab(tabName) {
-            const tabs = ['gerais', 'tabela'];
+            const tabs = ['gerais', 'comparativo', 'manuseio', 'tabela'];
             
             tabs.forEach(t => {
                 const content = document.getElementById(`tabContent-${t}`);
                 const btn = document.getElementById(`tabBtn-${t}`);
-                
-                if (!content || !btn) return;
                 
                 if (t === tabName) {
                     content.classList.add('active');
@@ -605,11 +979,132 @@
                 }
             });
 
-            // Redimensionar gráficos para evitar bugs visuais ao trocar de aba
-            if (tabName === 'gerais') {
-                if (chartBlocoInst) chartBlocoInst.resize();
-                if (chartEquipInst) chartEquipInst.resize();
+            setTimeout(() => {
+                if (tabName === 'gerais') {
+                    if(chartBlocoInst) chartBlocoInst.resize();
+                    if(chartEquipInst) chartEquipInst.resize();
+                } else if (tabName === 'comparativo') {
+                    if(chartMesInst) chartMesInst.resize();
+                    if(chartBlocoSemanaInst) chartBlocoSemanaInst.resize();
+                } else if (tabName === 'manuseio') {
+                    if(chartOperadorInst) chartOperadorInst.resize();
+                    if(chartPeriodoMesInst) chartPeriodoMesInst.resize();
+                    if(chartPeriodoSemInst) chartPeriodoSemInst.resize();
+                }
+            }, 50);
+        }
+
+        function openExportModal() {
+            document.getElementById('exportModal').classList.remove('hidden');
+        }
+
+        function closeExportModal() {
+            document.getElementById('exportModal').classList.add('hidden');
+        }
+
+        async function exportReport(format) {
+            const section = document.querySelector('input[name="exportSection"]:checked').value;
+            if(!section) return;
+
+            updateStatusBadge('syncing', 'Gerando Documento...');
+            
+            // Popula os dados do Container de Exportação
+            await prepareExportCanvas(section);
+            
+            const exportElement = document.getElementById('exportCanvasContainer');
+            
+            // Renderiza com HTML2Canvas forçando a captura do tamanho 1280x720
+            const canvas = await html2canvas(exportElement, { 
+                scale: 2, // Maior qualidade interna
+                useCORS: true, 
+                logging: false,
+                backgroundColor: '#f8fafc', // slate-50
+                width: 1280,
+                height: 720
+            });
+            
+            const timestamp = new Date().getTime();
+
+            if (format === 'jpeg') {
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const link = document.createElement('a');
+                link.download = `Relatorio_Rocadeira_${section}_${timestamp}.jpg`;
+                link.href = imgData;
+                link.click();
+            } else if (format === 'pdf') {
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                // jsPDF configurado para formato paisagem, em pixels equivalentes ao 1280x720
+                const doc = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'px', format: [1280, 720] });
+                doc.addImage(imgData, 'JPEG', 0, 0, 1280, 720);
+                doc.save(`Relatorio_Rocadeira_${section}_${timestamp}.pdf`);
             }
+            
+            closeExportModal();
+            updateStatusBadge('online', 'Conectado');
+        }
+
+        async function prepareExportCanvas(section) {
+            const kpiTarget = document.getElementById('exportKpis');
+            const chartTarget = document.getElementById('exportCharts');
+            
+            // Preenche data
+            const dateObj = new Date();
+            document.getElementById('exportDateLabel').innerText = dateObj.toLocaleDateString('pt-BR') + ' ' + dateObj.toLocaleTimeString('pt-BR');
+            
+            kpiTarget.innerHTML = '';
+            chartTarget.innerHTML = '';
+
+            let kpiSourceId, chartIds = [], subtitle = '';
+            if(section === 'gerais') {
+                kpiSourceId = 'tabContent-gerais';
+                chartIds = ['chartBloco', 'chartEquipamento'];
+                subtitle = 'Visão Geral e Distribuição';
+            } else if (section === 'comparativo') {
+                kpiSourceId = 'tabContent-comparativo';
+                chartIds = ['chartMes', 'chartBlocoSemana'];
+                subtitle = 'Comparativo Temporal e Áreas';
+            } else if (section === 'manuseio') {
+                kpiSourceId = 'tabContent-manuseio';
+                chartIds = ['chartOperador', 'chartPeriodoMes']; // Mostramos apenas 2 para caber perfeito nos 1280x720 sem comprimir muito. O chartPeriodoSemana fica de fora no print simplificado se for 3 charts.
+                subtitle = 'Manuseio, Operadores e Turnos';
+            }
+
+            document.getElementById('exportSubtitle').innerText = subtitle;
+
+            // Clona KPIs
+            const sourceTab = document.getElementById(kpiSourceId);
+            const sourceKpiGrid = sourceTab.querySelector('.grid.grid-cols-1.md\\:grid-cols-3');
+            if(sourceKpiGrid) {
+                kpiTarget.innerHTML = sourceKpiGrid.innerHTML;
+            }
+
+            // Clona Gráficos como Imagens
+            chartIds.forEach(id => {
+                const canvas = document.getElementById(id);
+                if(canvas) {
+                    const titleNode = canvas.parentElement.parentElement.querySelector('h2');
+                    
+                    const wrapper = document.createElement('div');
+                    wrapper.className = "bg-white rounded-2xl p-5 shadow-md border border-slate-200/80 flex flex-col h-full overflow-hidden";
+                    
+                    if(titleNode) {
+                        const clonedTitle = titleNode.cloneNode(true);
+                        clonedTitle.className = "text-xl font-bold text-slate-800 flex items-center gap-3 mb-4 pb-3 border-b border-slate-100";
+                        wrapper.appendChild(clonedTitle);
+                    }
+
+                    const img = document.createElement('img');
+                    // Imprime com fundo branco caso tenha transparente
+                    img.src = canvas.toDataURL('image/png', 1.0);
+                    img.className = "flex-1 object-contain w-full min-h-0"; 
+                    
+                    wrapper.appendChild(img);
+                    chartTarget.appendChild(wrapper);
+                }
+            });
+            
+            // Aguarda a renderização no DOM
+            return new Promise(res => setTimeout(res, 300));
         }
     </script>
 </body>
