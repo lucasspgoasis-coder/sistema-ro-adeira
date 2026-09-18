@@ -275,13 +275,13 @@
                     <div class="relative h-80 w-full"><canvas id="chartMes"></canvas></div>
                 </div>
 
-                <!-- NOVO: Horas por Bloco e Semana -->
+                <!-- NOVO: Horas por Roçadeira e Semana -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <div class="border-b border-slate-100 pb-4 mb-4">
                         <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-layer-group text-brand-500"></i> Uso da Roçadeira por Bloco e Semana
+                            <i class="fa-solid fa-layer-group text-brand-500"></i> Uso de Roçadeiras por Semana
                         </h2>
-                        <p class="text-xs text-slate-500 mt-1">Tempo total segmentado por área e demonstrado por semana</p>
+                        <p class="text-xs text-slate-500 mt-1">Tempo total segmentado por roçadeira e demonstrado por semana</p>
                     </div>
                     <div class="relative h-80 w-full"><canvas id="chartBlocoSemana"></canvas></div>
                 </div>
@@ -387,26 +387,67 @@
 
     <!-- Export Modal -->
     <div id="exportModal" class="hidden fixed inset-0 z-[100] bg-slate-900/60 flex items-center justify-center backdrop-blur-sm">
-        <div class="bg-white rounded-2xl p-6 shadow-2xl w-full max-w-md border border-slate-200 mx-4">
-            <h3 class="text-xl font-bold text-slate-800 mb-2">Exportar Relatório</h3>
-            <p class="text-sm text-slate-500 mb-6">Selecione o painel que deseja incluir e baixe no formato horizontal.</p>
+        <div class="bg-white rounded-2xl p-6 shadow-2xl w-full max-w-xl border border-slate-200 mx-4 flex flex-col max-h-[90vh]">
+            <h3 class="text-xl font-bold text-slate-800 mb-2">Exportar Relatório Personalizado</h3>
+            <p class="text-sm text-slate-500 mb-4">Selecione quais indicadores e gráficos deseja incluir no documento.</p>
             
-            <div class="space-y-3 mb-8">
-                <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition">
-                    <input type="radio" name="exportSection" value="gerais" checked class="w-5 h-5 text-brand-600 border-slate-300 focus:ring-brand-500">
-                    <span class="font-medium text-slate-700"><i class="fa-solid fa-chart-pie text-brand-500 mr-2"></i> Dados Gerais</span>
-                </label>
-                <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition">
-                    <input type="radio" name="exportSection" value="comparativo" class="w-5 h-5 text-brand-600 border-slate-300 focus:ring-brand-500">
-                    <span class="font-medium text-slate-700"><i class="fa-solid fa-scale-balanced text-slate-400 mr-2"></i> Comparativo</span>
-                </label>
-                <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition">
-                    <input type="radio" name="exportSection" value="manuseio" class="w-5 h-5 text-brand-600 border-slate-300 focus:ring-brand-500">
-                    <span class="font-medium text-slate-700"><i class="fa-solid fa-people-carry-box text-slate-400 mr-2"></i> Manuseio</span>
-                </label>
+            <div class="overflow-y-auto custom-scrollbar pr-2 space-y-4 mb-6 flex-1">
+                <!-- Select KPIs -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <h4 class="font-bold text-sm text-slate-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-list-ol text-slate-400"></i> Campos Gerais (Indicadores)</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <label class="flex items-center gap-3 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                            <input type="checkbox" id="chk_kpi_gerais" checked class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                            <span class="text-sm font-medium text-slate-700">Gerais</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                            <input type="checkbox" id="chk_kpi_comp" class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                            <span class="text-sm font-medium text-slate-700">Comparativo</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                            <input type="checkbox" id="chk_kpi_man" class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                            <span class="text-sm font-medium text-slate-700">Manuseio</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Select Charts -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <h4 class="font-bold text-sm text-slate-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-chart-line text-slate-400"></i> Gráficos</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <label class="flex items-center gap-3 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                            <input type="checkbox" id="chk_chart_bloco" checked class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                            <span class="text-sm font-medium text-slate-700">Tempo por Bloco</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                            <input type="checkbox" id="chk_chart_equip" checked class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                            <span class="text-sm font-medium text-slate-700">Tempo por Roçadeira</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                            <input type="checkbox" id="chk_chart_mes" checked class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                            <span class="text-sm font-medium text-slate-700">Horas por Mês</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                            <input type="checkbox" id="chk_chart_equip_sem" class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                            <span class="text-sm font-medium text-slate-700">Roçadeiras por Sem.</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                            <input type="checkbox" id="chk_chart_op" class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                            <span class="text-sm font-medium text-slate-700">Ranking de Operadores</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                            <input type="checkbox" id="chk_chart_per_mes" class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                            <span class="text-sm font-medium text-slate-700">Manhã vs Tarde (Mês)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                            <input type="checkbox" id="chk_chart_per_sem" class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                            <span class="text-sm font-medium text-slate-700">Manhã vs Tarde (Sem.)</span>
+                        </label>
+                    </div>
+                </div>
             </div>
             
-            <div class="flex justify-end gap-3">
+            <div class="flex justify-end gap-3 mt-auto pt-4 border-t border-slate-100">
                 <button onclick="closeExportModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg transition text-sm">Cancelar</button>
                 <button onclick="exportReport('jpeg')" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition shadow-sm text-sm flex items-center gap-2"><i class="fa-solid fa-image"></i> Baixar JPEG</button>
                 <button onclick="exportReport('pdf')" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg transition shadow-sm text-sm flex items-center gap-2"><i class="fa-solid fa-file-pdf"></i> Baixar PDF</button>
@@ -414,21 +455,21 @@
         </div>
     </div>
 
-    <!-- Hidden Export Template (Strict 1280x720) -->
-    <div id="exportCanvasContainer" class="fixed -left-[9999px] top-0 bg-slate-50 overflow-hidden flex flex-col font-sans" style="width: 1280px; height: 720px; z-index: -10;">
+    <!-- Hidden Export Template (Dynamic Layout) -->
+    <div id="exportCanvasContainer" class="fixed -left-[9999px] top-0 bg-slate-50 flex flex-col font-sans" style="width: 1280px; height: auto; min-height: 720px; z-index: -10;">
         <div class="bg-slate-900 text-white p-6 flex items-center gap-4 border-b-4 border-brand-500" style="height: 100px;">
             <img src="https://i.imgur.com/bEBkelG.png" class="w-14 h-14 object-contain">
             <div>
                 <h1 class="text-3xl font-bold">Registro de Uso da Roçadeira</h1>
-                <p id="exportSubtitle" class="text-slate-300 text-sm mt-1 uppercase tracking-wider font-semibold">Relatório</p>
+                <p id="exportSubtitle" class="text-slate-300 text-sm mt-1 uppercase tracking-wider font-semibold">Relatório Personalizado</p>
             </div>
             <div class="ml-auto text-right text-slate-400 text-sm">
                 <p>Data de Geração: <span id="exportDateLabel" class="text-white font-medium"></span></p>
             </div>
         </div>
-        <div class="flex-1 p-8 flex flex-col gap-6 w-full" style="height: 620px;">
-            <div id="exportKpis" class="grid grid-cols-3 gap-6" style="height: 140px;"></div>
-            <div id="exportCharts" class="grid grid-cols-2 gap-6 h-full w-full min-h-0"></div>
+        <div class="p-8 flex flex-col w-full h-auto gap-8">
+            <div id="exportKpis" class="flex flex-col gap-6"></div>
+            <div id="exportCharts" class="grid grid-cols-2 gap-8 w-full h-auto pb-8"></div>
         </div>
     </div>
 
@@ -757,8 +798,8 @@
             const opData = {};
             const periodoMesData = {};
             const periodoSemData = {};
-            const blocoSemanaData = {}; // Para o novo gráfico de blocos agrupados por semana
-            const allBlocosChart = new Set();
+            const equipSemanaData = {}; // Para o novo gráfico de Roçadeiras agrupadas por semana
+            const allEquipsChart = new Set();
 
             validData.forEach(r => {
                 if (r.DurationMinutes > 0) {
@@ -779,10 +820,10 @@
                         if(r.PeriodoCat === 'Manhã') periodoSemData[r.SemanaCode].manha += r.DurationMinutes;
                         else if(r.PeriodoCat === 'Tarde') periodoSemData[r.SemanaCode].tarde += r.DurationMinutes;
                         
-                        // Populando dados para o novo Gráfico de Blocos vs Semana
-                        if(!blocoSemanaData[r.SemanaCode]) blocoSemanaData[r.SemanaCode] = { label: r.Semana, blocos: {} };
-                        blocoSemanaData[r.SemanaCode].blocos[r.Local] = (blocoSemanaData[r.SemanaCode].blocos[r.Local] || 0) + r.DurationMinutes;
-                        allBlocosChart.add(r.Local);
+                        // Populando dados para o novo Gráfico de Roçadeiras vs Semana
+                        if(!equipSemanaData[r.SemanaCode]) equipSemanaData[r.SemanaCode] = { label: r.Semana, equips: {} };
+                        equipSemanaData[r.SemanaCode].equips[r.Equipamento] = (equipSemanaData[r.SemanaCode].equips[r.Equipamento] || 0) + r.DurationMinutes;
+                        allEquipsChart.add(r.Equipamento);
                     }
 
                     if(r.Operador !== 'Não Informado') opData[r.Operador] = (opData[r.Operador] || 0) + r.DurationMinutes;
@@ -834,15 +875,15 @@
                 options: chartDefaults
             });
 
-            // 4. COMPARATIVO: NOVO Gráfico - Uso por Bloco e Semana (Stacked)
-            const bsKeys = Object.keys(blocoSemanaData).sort((a,b) => a - b);
-            const labelsBS = bsKeys.map(k => blocoSemanaData[k].label);
-            const blocosArray = Array.from(allBlocosChart).sort();
+            // 4. COMPARATIVO: NOVO Gráfico - Uso de Roçadeiras por Semana (Stacked)
+            const esKeys = Object.keys(equipSemanaData).sort((a,b) => a - b);
+            const labelsES = esKeys.map(k => equipSemanaData[k].label);
+            const equipsArray = Array.from(allEquipsChart).sort();
             const colorsList = ['#f87171', '#fb923c', '#facc15', '#a3e635', '#34d399', '#2dd4bf', '#38bdf8', '#818cf8', '#a78bfa', '#e879f9'];
 
-            const datasetsBS = blocosArray.map((bName, idx) => ({
-                label: bName,
-                data: bsKeys.map(k => parseFloat(((blocoSemanaData[k].blocos[bName]||0)/60).toFixed(2))),
+            const datasetsES = equipsArray.map((eName, idx) => ({
+                label: eName,
+                data: esKeys.map(k => parseFloat(((equipSemanaData[k].equips[eName]||0)/60).toFixed(2))),
                 backgroundColor: colorsList[idx % colorsList.length],
                 borderRadius: 4
             }));
@@ -850,7 +891,7 @@
             if(chartBlocoSemanaInst) chartBlocoSemanaInst.destroy();
             chartBlocoSemanaInst = new Chart(document.getElementById('chartBlocoSemana'), {
                 type: 'bar',
-                data: { labels: labelsBS, datasets: datasetsBS },
+                data: { labels: labelsES, datasets: datasetsES },
                 options: {
                     ...chartDefaults,
                     plugins: {
@@ -861,7 +902,7 @@
                             font: { weight: 'bold', size: 9 },
                             anchor: 'center', align: 'center',
                             formatter: (val) => val === 0 ? '' : formatHMM(Math.round(val * 60)),
-                            display: function(context) { return context.dataset.data[context.dataIndex] > 0.5; } // Evita labels em pedaços mto pequenos
+                            display: function(context) { return context.dataset.data[context.dataIndex] > 0.5; } 
                         }
                     },
                     scales: {
@@ -1003,47 +1044,54 @@
         }
 
         async function exportReport(format) {
-            const section = document.querySelector('input[name="exportSection"]:checked').value;
-            if(!section) return;
-
             updateStatusBadge('syncing', 'Gerando Documento...');
             
-            // Popula os dados do Container de Exportação
-            await prepareExportCanvas(section);
+            // Popula os dados do Container de Exportação Dinâmico
+            await prepareExportCanvas();
             
             const exportElement = document.getElementById('exportCanvasContainer');
             
-            // Renderiza com HTML2Canvas forçando a captura do tamanho 1280x720
+            // Permite que o container se expanda dinamicamente baseado na quantidade de gráficos escolhidos
+            const originalHeight = exportElement.style.height;
+            exportElement.style.height = 'auto';
+
+            // Renderiza
             const canvas = await html2canvas(exportElement, { 
-                scale: 2, // Maior qualidade interna
+                scale: 2, 
                 useCORS: true, 
                 logging: false,
-                backgroundColor: '#f8fafc', // slate-50
-                width: 1280,
-                height: 720
+                backgroundColor: '#f8fafc', 
+                width: 1280
             });
             
+            // Retorna o estilo
+            exportElement.style.height = originalHeight;
+
             const timestamp = new Date().getTime();
 
             if (format === 'jpeg') {
                 const imgData = canvas.toDataURL('image/jpeg', 0.95);
                 const link = document.createElement('a');
-                link.download = `Relatorio_Rocadeira_${section}_${timestamp}.jpg`;
+                link.download = `Relatorio_Rocadeira_${timestamp}.jpg`;
                 link.href = imgData;
                 link.click();
             } else if (format === 'pdf') {
                 const imgData = canvas.toDataURL('image/jpeg', 0.95);
-                // jsPDF configurado para formato paisagem, em pixels equivalentes ao 1280x720
-                const doc = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'px', format: [1280, 720] });
-                doc.addImage(imgData, 'JPEG', 0, 0, 1280, 720);
-                doc.save(`Relatorio_Rocadeira_${section}_${timestamp}.pdf`);
+                
+                // Calcula a altura exata do PDF mantendo a largura de 1280px para gerar página contínua
+                const pdfHeight = (canvas.height / canvas.width) * 1280;
+                const orientation = pdfHeight > 1280 ? 'portrait' : 'landscape';
+                
+                const doc = new window.jspdf.jsPDF({ orientation: orientation, unit: 'px', format: [1280, pdfHeight] });
+                doc.addImage(imgData, 'JPEG', 0, 0, 1280, pdfHeight);
+                doc.save(`Relatorio_Rocadeira_${timestamp}.pdf`);
             }
             
             closeExportModal();
             updateStatusBadge('online', 'Conectado');
         }
 
-        async function prepareExportCanvas(section) {
+        async function prepareExportCanvas() {
             const kpiTarget = document.getElementById('exportKpis');
             const chartTarget = document.getElementById('exportCharts');
             
@@ -1054,38 +1102,38 @@
             kpiTarget.innerHTML = '';
             chartTarget.innerHTML = '';
 
-            let kpiSourceId, chartIds = [], subtitle = '';
-            if(section === 'gerais') {
-                kpiSourceId = 'tabContent-gerais';
-                chartIds = ['chartBloco', 'chartEquipamento'];
-                subtitle = 'Visão Geral e Distribuição';
-            } else if (section === 'comparativo') {
-                kpiSourceId = 'tabContent-comparativo';
-                chartIds = ['chartMes', 'chartBlocoSemana'];
-                subtitle = 'Comparativo Temporal e Áreas';
-            } else if (section === 'manuseio') {
-                kpiSourceId = 'tabContent-manuseio';
-                chartIds = ['chartOperador', 'chartPeriodoMes']; // Mostramos apenas 2 para caber perfeito nos 1280x720 sem comprimir muito. O chartPeriodoSemana fica de fora no print simplificado se for 3 charts.
-                subtitle = 'Manuseio, Operadores e Turnos';
-            }
+            // Clona e Anexa KPIs Selecionados
+            const kpisToClone = [];
+            if(document.getElementById('chk_kpi_gerais').checked) kpisToClone.push(document.querySelector('#tabContent-gerais .grid.grid-cols-1.md\\:grid-cols-3'));
+            if(document.getElementById('chk_kpi_comp').checked) kpisToClone.push(document.querySelector('#tabContent-comparativo .grid.grid-cols-1.md\\:grid-cols-3'));
+            if(document.getElementById('chk_kpi_man').checked) kpisToClone.push(document.querySelector('#tabContent-manuseio .grid.grid-cols-1.md\\:grid-cols-3'));
 
-            document.getElementById('exportSubtitle').innerText = subtitle;
+            kpisToClone.forEach(grid => {
+                if(grid) {
+                    const clone = grid.cloneNode(true);
+                    // Força estilo 3 colunas padrão para o relatório horizontal
+                    clone.className = "grid grid-cols-3 gap-6";
+                    kpiTarget.appendChild(clone);
+                }
+            });
 
-            // Clona KPIs
-            const sourceTab = document.getElementById(kpiSourceId);
-            const sourceKpiGrid = sourceTab.querySelector('.grid.grid-cols-1.md\\:grid-cols-3');
-            if(sourceKpiGrid) {
-                kpiTarget.innerHTML = sourceKpiGrid.innerHTML;
-            }
+            // Clona e Anexa Gráficos Selecionados
+            const chartsToClone = [];
+            if(document.getElementById('chk_chart_bloco').checked) chartsToClone.push('chartBloco');
+            if(document.getElementById('chk_chart_equip').checked) chartsToClone.push('chartEquipamento');
+            if(document.getElementById('chk_chart_mes').checked) chartsToClone.push('chartMes');
+            if(document.getElementById('chk_chart_equip_sem').checked) chartsToClone.push('chartBlocoSemana'); // Reaproveitou o ID original
+            if(document.getElementById('chk_chart_op').checked) chartsToClone.push('chartOperador');
+            if(document.getElementById('chk_chart_per_mes').checked) chartsToClone.push('chartPeriodoMes');
+            if(document.getElementById('chk_chart_per_sem').checked) chartsToClone.push('chartPeriodoSemana');
 
-            // Clona Gráficos como Imagens
-            chartIds.forEach(id => {
+            chartsToClone.forEach(id => {
                 const canvas = document.getElementById(id);
                 if(canvas) {
                     const titleNode = canvas.parentElement.parentElement.querySelector('h2');
                     
                     const wrapper = document.createElement('div');
-                    wrapper.className = "bg-white rounded-2xl p-5 shadow-md border border-slate-200/80 flex flex-col h-full overflow-hidden";
+                    wrapper.className = "bg-white rounded-2xl p-5 shadow-md border border-slate-200/80 flex flex-col h-full";
                     
                     if(titleNode) {
                         const clonedTitle = titleNode.cloneNode(true);
@@ -1094,9 +1142,8 @@
                     }
 
                     const img = document.createElement('img');
-                    // Imprime com fundo branco caso tenha transparente
                     img.src = canvas.toDataURL('image/png', 1.0);
-                    img.className = "flex-1 object-contain w-full min-h-0"; 
+                    img.className = "w-full object-contain mt-auto"; 
                     
                     wrapper.appendChild(img);
                     chartTarget.appendChild(wrapper);
