@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Uso da Roçadeira</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            500: '#f97316', // Orange theme for equipment
+                            600: '#ea580c',
+                            700: '#c2410c',
+                            800: '#9a3412',
+                            900: '#7c2d12',
+                            950: '#431407'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Header -->
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <!-- Brand / Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-brand-500 flex items-center justify-center shadow-inner">
+                        <i class="fa-solid fa-fan text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                            Registro de Uso da Roçadeira
+                        </h1>
+                        <p class="text-xs text-slate-400 mt-0.5 flex items-center gap-2">
+                            Monitoramento de Equipamentos
+                            <span id="syncStatusBadge" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                <i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Carregando...
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Global Action Buttons -->
+                <div class="flex items-center gap-2">
+                    <button onclick="loadSpreadsheetData()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 active:bg-slate-950 text-white text-xs font-semibold rounded-lg transition duration-200 flex items-center gap-2 border border-slate-700 shadow-sm">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>Sincronizar Dados</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="bg-slate-950 border-t border-slate-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <nav class="flex space-x-2 sm:space-x-4 overflow-x-auto py-3 scrollbar-none text-sm font-medium">
+                    <button id="tabBtn-gerais" onclick="switchTab('gerais')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap bg-brand-600 text-white shadow-md">
+                        <i class="fa-solid fa-chart-pie text-brand-100"></i> <span>Dados Gerais</span>
+                    </button>
+                    <button id="tabBtn-tabela" onclick="switchTab('tabela')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:bg-slate-800 hover:text-white">
+                        <i class="fa-solid fa-table-list"></i> <span>Tabela de Registros</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+
+        <!-- TAB 1: DADOS GERAIS -->
+        <div id="tabContent-gerais" class="tab-content active space-y-6">
+            
+            <!-- Cards de KPIs (Campos Gerais) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- KPI 1: Total Tempo Usado -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 relative overflow-hidden group hover:border-brand-300 transition-colors">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full -mr-8 -mt-8 z-0"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                                <i class="fa-solid fa-stopwatch"></i>
+                            </div>
+                            <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Total Tempo Usado</h3>
+                        </div>
+                        <div class="flex items-baseline gap-2">
+                            <span id="kpiTotalTempo" class="text-4xl font-black text-slate-800">0h 0m</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-2 flex items-center gap-1 font-medium">
+                            <i class="fa-solid fa-clock-rotate-left"></i> Tempo total acumulado
+                        </p>
+                    </div>
+                </div>
+
+                <!-- KPI 2: Bloco com Mais Uso -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 relative overflow-hidden group hover:border-brand-300 transition-colors">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-bl-full -mr-8 -mt-8 z-0"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                                <i class="fa-solid fa-map-location-dot"></i>
+                            </div>
+                            <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Bloco com Mais Uso</h3>
+                        </div>
+                        <div class="flex flex-col">
+                            <span id="kpiTopBloco" class="text-2xl font-bold text-slate-800 truncate" title="Nenhum">Nenhum</span>
+                            <span id="kpiTopBlocoTempo" class="text-lg font-bold text-emerald-600 mt-1">0h 0m</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-2 flex items-center gap-1 font-medium">
+                            <i class="fa-solid fa-arrow-trend-up"></i> Local com maior demanda
+                        </p>
+                    </div>
+                </div>
+
+                <!-- KPI 3: Roçadeira Mais Utilizada -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 relative overflow-hidden group hover:border-brand-300 transition-colors">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-brand-50 rounded-bl-full -mr-8 -mt-8 z-0"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 bg-brand-100 text-brand-600 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                                <i class="fa-solid fa-screwdriver-wrench"></i>
+                            </div>
+                            <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Roçadeira Mais Usada</h3>
+                        </div>
+                        <div class="flex flex-col">
+                            <span id="kpiTopEquip" class="text-2xl font-bold text-slate-800 truncate" title="Nenhuma">Nenhuma</span>
+                            <span id="kpiTopEquipTempo" class="text-lg font-bold text-brand-600 mt-1">0h 0m</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-2 flex items-center gap-1 font-medium">
+                            <i class="fa-solid fa-medal"></i> Equipamento mais exigido
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Gráfico 1: Tempo Usado por Bloco -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
+                    <div class="border-b border-slate-100 pb-4 mb-4 flex justify-between items-center">
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-chart-column text-emerald-500"></i> Total de Tempo por Bloco
+                            </h2>
+                            <p class="text-xs text-slate-500 mt-1">Horas totais de uso distribuídas por local (ordem alfabética)</p>
+                        </div>
+                    </div>
+                    <div class="relative h-80 w-full">
+                        <canvas id="chartBloco"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfico 2: Tempo Usado por Roçadeira -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
+                    <div class="border-b border-slate-100 pb-4 mb-4 flex justify-between items-center">
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-chart-bar text-brand-500"></i> Total de Tempo por Roçadeira
+                            </h2>
+                            <p class="text-xs text-slate-500 mt-1">Horas totais trabalhadas por equipamento (ordem alfabética)</p>
+                        </div>
+                    </div>
+                    <div class="relative h-80 w-full">
+                        <canvas id="chartEquipamento"></canvas>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- TAB 2: TABELA DE REGISTROS -->
+        <div id="tabContent-tabela" class="tab-content">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
+                <div class="p-5 border-b border-slate-100">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-list-ul text-slate-500"></i> Detalhamento de Registros
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">Lista completa com as informações e duração de cada registro</p>
+                </div>
+
+                <div class="overflow-x-auto custom-scrollbar max-h-[600px]">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead class="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider sticky top-0 z-10 shadow-sm text-xs">
+                            <tr>
+                                <th class="p-4 border-b border-slate-200 whitespace-nowrap">Data</th>
+                                <th class="p-4 border-b border-slate-200 whitespace-nowrap">Período</th>
+                                <th class="p-4 border-b border-slate-200 whitespace-nowrap">Local / Bloco</th>
+                                <th class="p-4 border-b border-slate-200 whitespace-nowrap">Roçadeira / Equip.</th>
+                                <th class="p-4 border-b border-slate-200 whitespace-nowrap">Operador</th>
+                                <th class="p-4 border-b border-slate-200 whitespace-nowrap">Início</th>
+                                <th class="p-4 border-b border-slate-200 whitespace-nowrap">Fim</th>
+                                <th class="p-4 border-b border-slate-200 whitespace-nowrap text-right bg-blue-50/50">Duração</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody" class="divide-y divide-slate-100 text-slate-700">
+                            <!-- Rows injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-4 bg-slate-50 border-t border-slate-100 text-xs text-slate-500 font-medium">
+                    Exibindo <span id="tableTotalCount" class="font-bold text-slate-700">0</span> registros válidos.
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // URL da Planilha modificada para gerar CSV diretamente
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR9q-T-U_fT_tP9_ZKet4ai-BG11a6eCnwyG_BrJWIG7rQ7gFbKkrjDnj_r3ptMs-BbCl-7nm5kkHcI/pub?output=csv';
+        
+        let rawData = [];
+        let validData = [];
+        
+        // Instâncias dos gráficos
+        let chartBlocoInst = null;
+        let chartEquipInst = null;
+
+        // Registrar plugin para labels nas barras
+        Chart.register(ChartDataLabels);
+
+        window.onload = () => {
+            loadSpreadsheetData();
+        };
+
+        function loadSpreadsheetData() {
+            updateStatusBadge('syncing');
+            
+            // Adiciona timestamp para evitar cache
+            const fetchUrl = `${CSV_URL}&t=${new Date().getTime()}`;
+
+            Papa.parse(fetchUrl, {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    if (results.data && results.data.length > 0) {
+                        processRawData(results.data);
+                        updateStatusBadge('online');
+                        updateDashboard();
+                    } else {
+                        updateStatusBadge('error', 'Planilha Vazia');
+                        alert("Não foram encontrados dados na planilha.");
+                    }
+                },
+                error: function(err) {
+                    console.error("Erro ao ler CSV:", err);
+                    updateStatusBadge('error', 'Erro de Conexão');
+                    alert("Erro ao conectar com a planilha do Google. Verifique se ela está publicada na web.");
+                }
+            });
+        }
+
+        function updateStatusBadge(type, customText = '') {
+            const badge = document.getElementById('syncStatusBadge');
+            if (!badge) return;
+            
+            if (type === 'syncing') {
+                badge.className = 'inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30';
+                badge.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Carregando...';
+            } else if (type === 'online') {
+                badge.className = 'inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+                badge.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i> Conectado';
+            } else if (type === 'error') {
+                badge.className = 'inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/20 text-red-300 border border-red-500/30';
+                badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> ${customText}`;
+            }
+        }
+
+        function processRawData(data) {
+            validData = [];
+
+            data.forEach(item => {
+                // Função helper para buscar valor considerando diferentes variações do nome da coluna
+                const getVal = (keys) => {
+                    for (let k of keys) {
+                        for (let a in item) {
+                            if (a.trim().toLowerCase() === k.toLowerCase()) return item[a].trim();
+                        }
+                    }
+                    return '';
+                };
+
+                const dataVal = getVal(['Data', 'data', 'DATE']);
+                const operadorVal = getVal(['Operador', 'operador', 'Funcionario']);
+                const periodoVal = getVal(['Periodo', 'período', 'Turno']);
+                const localVal = getVal(['Local', 'local', 'Bloco', 'bloco', 'Setor']);
+                const equipVal = getVal(['Equipamento', 'equipamento', 'Roçadeira', 'rocadeira']);
+                const inicioVal = getVal(['Inicio', 'Início', 'inicio']);
+                const fimVal = getVal(['Fim', 'fim', 'Término']);
+
+                // Pula linhas totalmente vazias ou sem informações vitais
+                if (!localVal && !equipVal && !inicioVal && !fimVal) return;
+
+                // Calcula duração em minutos
+                const durationMinutes = calcDuration(inicioVal, fimVal);
+
+                validData.push({
+                    Data: dataVal || '-',
+                    Operador: operadorVal || '-',
+                    Periodo: periodoVal || '-',
+                    Local: localVal || 'Não Informado',
+                    Equipamento: equipVal || 'Não Informado',
+                    Inicio: inicioVal || '-',
+                    Fim: fimVal || '-',
+                    DurationMinutes: durationMinutes
+                });
+            });
+        }
+
+        // Converte string "HH:MM" para minutos e calcula a diferença
+        function calcDuration(inicio, fim) {
+            if (!inicio || !fim || inicio === '-' || fim === '-') return 0;
+            
+            try {
+                // Extrai apenas números e dois pontos, caso venha com letras
+                const cleanTime = (t) => t.replace(/[^\d:]/g, '');
+                
+                const parseToMinutes = (timeStr) => {
+                    let [h, m] = cleanTime(timeStr).split(':');
+                    return (parseInt(h || 0) * 60) + parseInt(m || 0);
+                };
+
+                const startMins = parseToMinutes(inicio);
+                let endMins = parseToMinutes(fim);
+
+                // Tratamento simplificado para virada de dia (se o fim for menor que inicio)
+                if (endMins < startMins) {
+                    endMins += (24 * 60); // adiciona 24 horas
+                }
+
+                const diff = endMins - startMins;
+                return diff > 0 && diff < (24*60) ? diff : 0; // Descarta durações absurdas maiores que 24h
+            } catch (e) {
+                return 0;
+            }
+        }
+
+        function formatDuration(totalMinutes) {
+            if (totalMinutes === 0) return '0h 0m';
+            const h = Math.floor(totalMinutes / 60);
+            const m = totalMinutes % 60;
+            return `${h}h ${m}m`;
+        }
+
+        function updateDashboard() {
+            updateKPIs();
+            renderCharts();
+            renderTable();
+        }
+
+        function updateKPIs() {
+            let totalMins = 0;
+            const blocosMap = {};
+            const equipMap = {};
+
+            validData.forEach(row => {
+                const mins = row.DurationMinutes;
+                totalMins += mins;
+
+                if (mins > 0) {
+                    blocosMap[row.Local] = (blocosMap[row.Local] || 0) + mins;
+                    equipMap[row.Equipamento] = (equipMap[row.Equipamento] || 0) + mins;
+                }
+            });
+
+            // 1. Total Tempo
+            document.getElementById('kpiTotalTempo').innerText = formatDuration(totalMins);
+
+            // 2. Bloco com mais uso
+            let topBloco = 'Nenhum', maxBlocoMins = 0;
+            for (let b in blocosMap) {
+                if (blocosMap[b] > maxBlocoMins) {
+                    maxBlocoMins = blocosMap[b];
+                    topBloco = b;
+                }
+            }
+            document.getElementById('kpiTopBloco').innerText = topBloco;
+            document.getElementById('kpiTopBloco').title = topBloco;
+            document.getElementById('kpiTopBlocoTempo').innerText = formatDuration(maxBlocoMins);
+
+            // 3. Roçadeira mais usada
+            let topEquip = 'Nenhuma', maxEquipMins = 0;
+            for (let e in equipMap) {
+                if (equipMap[e] > maxEquipMins) {
+                    maxEquipMins = equipMap[e];
+                    topEquip = e;
+                }
+            }
+            document.getElementById('kpiTopEquip').innerText = topEquip;
+            document.getElementById('kpiTopEquip').title = topEquip;
+            document.getElementById('kpiTopEquipTempo').innerText = formatDuration(maxEquipMins);
+        }
+
+        function renderCharts() {
+            // Agrupamento de Dados
+            const blocosData = {};
+            const equipData = {};
+
+            validData.forEach(r => {
+                if (r.DurationMinutes > 0) {
+                    blocosData[r.Local] = (blocosData[r.Local] || 0) + r.DurationMinutes;
+                    equipData[r.Equipamento] = (equipData[r.Equipamento] || 0) + r.DurationMinutes;
+                }
+            });
+
+            // Ordenação Alfabética para Blocos
+            const blocosKeysSorted = Object.keys(blocosData).sort((a, b) => a.localeCompare(b));
+            const blocosLabels = blocosKeysSorted;
+            // Converter minutos para horas fracionadas para o gráfico (ex: 90min = 1.5h)
+            const blocosValues = blocosKeysSorted.map(k => parseFloat((blocosData[k] / 60).toFixed(2)));
+
+            // Ordenação Alfabética para Equipamentos
+            const equipKeysSorted = Object.keys(equipData).sort((a, b) => a.localeCompare(b));
+            const equipLabels = equipKeysSorted;
+            const equipValues = equipKeysSorted.map(k => parseFloat((equipData[k] / 60).toFixed(2)));
+
+            // Formatter para Tooltip e DataLabels
+            const tooltipFormatter = function(context) {
+                const val = context.raw; // horas decimais
+                const totalMins = Math.round(val * 60);
+                return ` ${formatDuration(totalMins)} (${val} hrs)`;
+            };
+
+            const dataLabelFormatter = function(value) {
+                if(value === 0) return '';
+                const totalMins = Math.round(value * 60);
+                return formatDuration(totalMins);
+            };
+
+            // Gráfico 1: Bloco
+            const ctxBloco = document.getElementById('chartBloco');
+            if (chartBlocoInst) chartBlocoInst.destroy();
+            chartBlocoInst = new Chart(ctxBloco, {
+                type: 'bar',
+                data: {
+                    labels: blocosLabels,
+                    datasets: [{
+                        label: 'Tempo (Horas)',
+                        data: blocosValues,
+                        backgroundColor: '#10b981', // Emerald 500
+                        borderRadius: 6,
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: { label: tooltipFormatter }
+                        },
+                        datalabels: {
+                            anchor: 'end', align: 'top',
+                            formatter: dataLabelFormatter,
+                            font: { weight: 'bold', size: 11 },
+                            color: '#475569'
+                        }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            title: { display: true, text: 'Horas Totais' },
+                            grid: { color: '#f1f5f9' }
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { maxRotation: 45, minRotation: 0 }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico 2: Equipamento (Roçadeira)
+            const ctxEquip = document.getElementById('chartEquipamento');
+            if (chartEquipInst) chartEquipInst.destroy();
+            chartEquipInst = new Chart(ctxEquip, {
+                type: 'bar',
+                data: {
+                    labels: equipLabels,
+                    datasets: [{
+                        label: 'Tempo (Horas)',
+                        data: equipValues,
+                        backgroundColor: '#f97316', // Orange 500
+                        borderRadius: 6,
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'x', // Mantido como vertical, ou mude para 'y' para horizontal
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: { label: tooltipFormatter }
+                        },
+                        datalabels: {
+                            anchor: 'end', align: 'top',
+                            formatter: dataLabelFormatter,
+                            font: { weight: 'bold', size: 11 },
+                            color: '#475569'
+                        }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            title: { display: true, text: 'Horas Totais' },
+                            grid: { color: '#f1f5f9' }
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { maxRotation: 45, minRotation: 0 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            
+            validData.forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = idx % 2 === 0 ? 'bg-white hover:bg-slate-50 transition' : 'bg-slate-50/50 hover:bg-slate-100 transition';
+                
+                const duracaoText = row.DurationMinutes > 0 ? formatDuration(row.DurationMinutes) : '<span class="text-slate-400">Inválido/Zero</span>';
+                const duracaoClass = row.DurationMinutes > 0 ? 'text-blue-600 font-bold' : 'text-slate-400';
+
+                tr.innerHTML = `
+                    <td class="p-4 whitespace-nowrap font-medium text-slate-800">${row.Data}</td>
+                    <td class="p-4 whitespace-nowrap text-slate-600">${row.Periodo}</td>
+                    <td class="p-4 whitespace-nowrap"><span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 font-semibold rounded-md border border-emerald-100">${row.Local}</span></td>
+                    <td class="p-4 whitespace-nowrap"><span class="px-2.5 py-1 bg-brand-50 text-brand-700 font-semibold rounded-md border border-brand-100">${row.Equipamento}</span></td>
+                    <td class="p-4 whitespace-nowrap text-slate-600"><i class="fa-solid fa-user text-slate-400 mr-2 text-xs"></i>${row.Operador}</td>
+                    <td class="p-4 whitespace-nowrap text-slate-500 font-mono">${row.Inicio}</td>
+                    <td class="p-4 whitespace-nowrap text-slate-500 font-mono">${row.Fim}</td>
+                    <td class="p-4 whitespace-nowrap text-right ${duracaoClass} bg-blue-50/20">${duracaoText}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('tableTotalCount').innerText = validData.length;
+        }
+
+        function switchTab(tabName) {
+            const tabs = ['gerais', 'tabela'];
+            
+            tabs.forEach(t => {
+                const content = document.getElementById(`tabContent-${t}`);
+                const btn = document.getElementById(`tabBtn-${t}`);
+                
+                if (!content || !btn) return;
+                
+                if (t === tabName) {
+                    content.classList.add('active');
+                    btn.className = 'tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap bg-brand-600 text-white shadow-md';
+                } else {
+                    content.classList.remove('active');
+                    btn.className = 'tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:bg-slate-800 hover:text-white';
+                }
+            });
+
+            // Redimensionar gráficos para evitar bugs visuais ao trocar de aba
+            if (tabName === 'gerais') {
+                if (chartBlocoInst) chartBlocoInst.resize();
+                if (chartEquipInst) chartEquipInst.resize();
+            }
+        }
+    </script>
+</body>
+</html>
