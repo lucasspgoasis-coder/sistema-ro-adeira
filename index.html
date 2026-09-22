@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="h-full bg-slate-50">
+<html lang="pt-BR" class="bg-slate-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -60,7 +60,7 @@
         }
     </style>
 </head>
-<body class="h-full text-slate-800 antialiased selection:bg-brand-500 selection:text-white bg-slate-50">
+<body class="min-h-screen text-slate-800 antialiased selection:bg-brand-500 selection:text-white bg-slate-50">
 
     <div id="loginScreen" class="fixed inset-0 z-[200] bg-slate-900 flex flex-col items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full border border-slate-200 text-center relative overflow-hidden">
@@ -93,15 +93,14 @@
         <p class="mt-8 text-slate-500 text-xs font-medium tracking-wider uppercase">Controle de Equipamentos &copy; 2026</p>
     </div>
 
-    <!-- Main App Container (Hidden Initially) -->
-    <div id="mainApp" class="hidden h-full flex-col">
+    <!-- Main App Container -->
+    <div id="mainApp" class="hidden min-h-screen flex-col bg-slate-50">
 
     <!-- Header -->
     <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div class="flex items-center space-x-3">
-                    <!-- Updated Logo Sem Contorno -->
                     <img src="https://i.imgur.com/bEBkelG.png" alt="Logo" class="w-12 h-12 object-contain">
                     <div>
                         <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
@@ -117,12 +116,10 @@
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <!-- Export Button -->
                     <button onclick="openExportModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-semibold rounded-lg transition duration-200 flex items-center gap-2 shadow-sm">
                         <i class="fa-solid fa-download"></i>
                         <span>Exportar Relatório</span>
                     </button>
-                    <!-- Sync Button -->
                     <button onclick="loadSpreadsheetData()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 active:bg-slate-950 text-white text-xs font-semibold rounded-lg transition duration-200 flex items-center gap-2 border border-slate-700 shadow-sm">
                         <i class="fa-solid fa-rotate-right"></i>
                         <span>Sincronizar</span>
@@ -131,7 +128,7 @@
             </div>
         </div>
 
-        <!-- Navigation Tabs -->
+        <!-- Navigation Tabs (5 Tabs) -->
         <div class="bg-slate-950 border-t border-slate-800">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <nav class="flex space-x-2 sm:space-x-4 overflow-x-auto py-3 custom-scrollbar text-sm font-medium">
@@ -143,6 +140,9 @@
                     </button>
                     <button id="tabBtn-manuseio" onclick="switchTab('manuseio')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:bg-slate-800 hover:text-white">
                         <i class="fa-solid fa-people-carry-box"></i> <span>Manuseio</span>
+                    </button>
+                    <button id="tabBtn-rocadeiras" onclick="switchTab('rocadeiras')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:bg-slate-800 hover:text-white">
+                        <i class="fa-solid fa-tractor"></i> <span>Roçadeiras</span>
                     </button>
                     <button id="tabBtn-tabela" onclick="switchTab('tabela')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:bg-slate-800 hover:text-white">
                         <i class="fa-solid fa-table-list"></i> <span>Tabela de Registros</span>
@@ -197,7 +197,7 @@
         <!-- TAB 1: DADOS GERAIS -->
         <div id="tabContent-gerais" class="tab-content active space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- KPI 1: Tempo Total Segmentado (Manhã e Tarde) -->
+                <!-- KPI 1 -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full -mr-8 -mt-8 z-0"></div>
                     <div class="relative z-10">
@@ -250,19 +250,19 @@
                 </div>
             </div>
 
-            <!-- Gráficos Dados Gerais -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Gráficos Dados Gerais - Empilhados Verticalmente -->
+            <div class="grid grid-cols-1 gap-6">
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4 border-b border-slate-100 pb-4">
                         <i class="fa-solid fa-chart-column text-emerald-500"></i> Tempo por Bloco (Alfabética)
                     </h2>
-                    <div class="relative h-80 w-full"><canvas id="chartBloco"></canvas></div>
+                    <div class="relative h-[420px] w-full"><canvas id="chartBloco"></canvas></div>
                 </div>
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4 border-b border-slate-100 pb-4">
                         <i class="fa-solid fa-chart-bar text-brand-500"></i> Tempo por Roçadeira (Alfabética)
                     </h2>
-                    <div class="relative h-80 w-full"><canvas id="chartEquipamento"></canvas></div>
+                    <div class="relative h-[420px] w-full"><canvas id="chartEquipamento"></canvas></div>
                 </div>
             </div>
         </div>
@@ -297,7 +297,8 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Gráficos Comparativo - Empilhados Verticalmente -->
+            <div class="grid grid-cols-1 gap-6">
                 <!-- Horas por Mês -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <div class="border-b border-slate-100 pb-4 mb-4">
@@ -306,10 +307,10 @@
                         </h2>
                         <p class="text-xs text-slate-500 mt-1">Evolução do tempo total de uso mensal</p>
                     </div>
-                    <div class="relative h-80 w-full"><canvas id="chartMes"></canvas></div>
+                    <div class="relative h-[420px] w-full"><canvas id="chartMes"></canvas></div>
                 </div>
 
-                <!-- NOVO: Horas por Roçadeira e Semana -->
+                <!-- Uso de Roçadeiras por Semana -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <div class="border-b border-slate-100 pb-4 mb-4">
                         <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
@@ -317,7 +318,7 @@
                         </h2>
                         <p class="text-xs text-slate-500 mt-1">Tempo total segmentado por roçadeira e demonstrado por semana</p>
                     </div>
-                    <div class="relative h-80 w-full"><canvas id="chartBlocoSemana"></canvas></div>
+                    <div class="relative h-[420px] w-full"><canvas id="chartBlocoSemana"></canvas></div>
                 </div>
             </div>
         </div>
@@ -352,39 +353,112 @@
                 </div>
             </div>
 
-            <!-- Operadores com mais uso -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
-                <div class="border-b border-slate-100 pb-4 mb-4">
-                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-users text-sky-500"></i> Ranking de Operadores
-                    </h2>
-                    <p class="text-xs text-slate-500 mt-1">Pessoas que mais utilizaram a roçadeira (Ordem Decrescente)</p>
-                </div>
-                <div class="relative h-[360px] w-full"><canvas id="chartOperador"></canvas></div>
-            </div>
-
-            <!-- Manhã vs Tarde (Em Barras) -->
             <div class="grid grid-cols-1 gap-6">
+                <!-- Operadores com mais uso -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
+                    <div class="border-b border-slate-100 pb-4 mb-4">
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-users text-sky-500"></i> Ranking de Operadores
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">Pessoas que mais utilizaram a roçadeira (Ordem Decrescente)</p>
+                    </div>
+                    <div class="relative h-[420px] w-full"><canvas id="chartOperador"></canvas></div>
+                </div>
+
+                <!-- Manhã vs Tarde (Por Mês) -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <div class="border-b border-slate-100 pb-4 mb-4">
                         <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                             <i class="fa-solid fa-cloud-sun text-amber-500"></i> Manhã vs Tarde (Por Mês)
                         </h2>
                     </div>
-                    <div class="relative h-80 w-full"><canvas id="chartPeriodoMes"></canvas></div>
+                    <div class="relative h-[420px] w-full"><canvas id="chartPeriodoMes"></canvas></div>
                 </div>
+
+                <!-- Manhã vs Tarde (Por Semana) -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <div class="border-b border-slate-100 pb-4 mb-4">
                         <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                             <i class="fa-solid fa-calendar-week text-indigo-500"></i> Manhã vs Tarde (Por Semana)
                         </h2>
                     </div>
-                    <div class="relative h-80 w-full"><canvas id="chartPeriodoSemana"></canvas></div>
+                    <div class="relative h-[420px] w-full"><canvas id="chartPeriodoSemana"></canvas></div>
                 </div>
             </div>
         </div>
 
-        <!-- TAB 4: TABELA DE REGISTROS -->
+        <!-- TAB 4: ROÇADEIRAS (NOVA ABA DEDICADA) -->
+        <div id="tabContent-rocadeiras" class="tab-content space-y-6">
+            <!-- Campos Gerais / Indicadores de Roçadeiras -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- KPI 1 -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 relative overflow-hidden">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center text-lg"><i class="fa-solid fa-award"></i></div>
+                        <h3 class="text-xs font-bold text-slate-500 uppercase">Melhor Rendimento</h3>
+                    </div>
+                    <span id="kpiRocMelhorRendimento" class="text-xl font-bold text-slate-800 block truncate">Nenhuma</span>
+                    <p id="kpiRocMelhorRendimentoVal" class="text-xs font-semibold text-amber-600 mt-1">Média: 0 h 0 min / uso</p>
+                </div>
+
+                <!-- KPI 2 -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 relative overflow-hidden">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 bg-brand-100 text-brand-600 rounded-lg flex items-center justify-center text-lg"><i class="fa-solid fa-map-pin"></i></div>
+                        <h3 class="text-xs font-bold text-slate-500 uppercase">Mais Usada no Bloco Líder</h3>
+                    </div>
+                    <span id="kpiRocTopBlocoEquip" class="text-xl font-bold text-slate-800 block truncate">Nenhuma</span>
+                    <p id="kpiRocTopBlocoNome" class="text-xs font-semibold text-brand-600 mt-1">Bloco: -</p>
+                </div>
+
+                <!-- KPI 3 -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 relative overflow-hidden">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center text-lg"><i class="fa-solid fa-calculator"></i></div>
+                        <h3 class="text-xs font-bold text-slate-500 uppercase">Média Geral por Roçadeira</h3>
+                    </div>
+                    <span id="kpiRocMediaGeral" class="text-xl font-bold text-slate-800 block">0 h 0 min</span>
+                    <p class="text-xs text-slate-400 mt-1">Uso médio total acumulado</p>
+                </div>
+
+                <!-- KPI 4 -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 relative overflow-hidden">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-lg"><i class="fa-solid fa-cubes-stacked"></i></div>
+                        <h3 class="text-xs font-bold text-slate-500 uppercase">Roçadeiras Ativas</h3>
+                    </div>
+                    <span id="kpiRocTotalAtivas" class="text-xl font-bold text-slate-800 block">0</span>
+                    <p class="text-xs text-slate-400 mt-1">Equipamentos registrados</p>
+                </div>
+            </div>
+
+            <!-- Gráficos de Roçadeiras - Um abaixo do outro -->
+            <div class="grid grid-cols-1 gap-6">
+                <!-- Gráfico 1: Roçadeiras mais usadas por Bloco -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
+                    <div class="border-b border-slate-100 pb-4 mb-4">
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-column text-brand-500"></i> Roçadeiras Mais Usadas por Bloco
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">Distribuição de horas de uso de cada roçadeira segmentada por bloco de trabalho</p>
+                    </div>
+                    <div class="relative h-[450px] w-full"><canvas id="chartRocBloco"></canvas></div>
+                </div>
+
+                <!-- Gráfico 2: Rendimento por Roçadeira (Melhor Rendimento em Destaque) -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
+                    <div class="border-b border-slate-100 pb-4 mb-4">
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-gauge-high text-emerald-500"></i> Rendimento por Roçadeira
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">Comparativo de tempo médio por uso e tempo total para identificar o melhor rendimento por equipamento</p>
+                    </div>
+                    <div class="relative h-[450px] w-full"><canvas id="chartRocRendimento"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: TABELA DE REGISTROS -->
         <div id="tabContent-tabela" class="tab-content">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
                 <div class="p-5 border-b border-slate-100">
@@ -429,18 +503,22 @@
                 <!-- Select KPIs -->
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
                     <h4 class="font-bold text-sm text-slate-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-list-ol text-slate-400"></i> Campos Gerais (Indicadores)</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        <label class="flex items-center gap-3 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <label class="flex items-center gap-2 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
                             <input type="checkbox" id="chk_kpi_gerais" checked class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
-                            <span class="text-sm font-medium text-slate-700">Gerais</span>
+                            <span class="text-xs font-medium text-slate-700">Gerais</span>
                         </label>
-                        <label class="flex items-center gap-3 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                        <label class="flex items-center gap-2 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
                             <input type="checkbox" id="chk_kpi_comp" class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
-                            <span class="text-sm font-medium text-slate-700">Comparativo</span>
+                            <span class="text-xs font-medium text-slate-700">Comparativo</span>
                         </label>
-                        <label class="flex items-center gap-3 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                        <label class="flex items-center gap-2 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
                             <input type="checkbox" id="chk_kpi_man" class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
-                            <span class="text-sm font-medium text-slate-700">Manuseio</span>
+                            <span class="text-xs font-medium text-slate-700">Manuseio</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                            <input type="checkbox" id="chk_kpi_roc" checked class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                            <span class="text-xs font-medium text-slate-700">Roçadeiras</span>
                         </label>
                     </div>
                 </div>
@@ -458,24 +536,20 @@
                             <span class="text-sm font-medium text-slate-700">Tempo por Roçadeira</span>
                         </label>
                         <label class="flex items-center gap-3 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
-                            <input type="checkbox" id="chk_chart_mes" checked class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                            <input type="checkbox" id="chk_chart_mes" class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
                             <span class="text-sm font-medium text-slate-700">Horas por Mês</span>
                         </label>
                         <label class="flex items-center gap-3 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
-                            <input type="checkbox" id="chk_chart_equip_sem" class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
-                            <span class="text-sm font-medium text-slate-700">Roçadeiras por Sem.</span>
+                            <input type="checkbox" id="chk_chart_roc_bloco" checked class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                            <span class="text-sm font-medium text-slate-700">Roçadeiras por Bloco</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                            <input type="checkbox" id="chk_chart_roc_rend" checked class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                            <span class="text-sm font-medium text-slate-700">Rendimento por Roçadeira</span>
                         </label>
                         <label class="flex items-center gap-3 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
                             <input type="checkbox" id="chk_chart_op" class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
-                            <span class="text-sm font-medium text-slate-700">Ranking de Operadores</span>
-                        </label>
-                        <label class="flex items-center gap-3 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
-                            <input type="checkbox" id="chk_chart_per_mes" class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
-                            <span class="text-sm font-medium text-slate-700">Manhã vs Tarde (Mês)</span>
-                        </label>
-                        <label class="flex items-center gap-3 p-2 border border-slate-200 bg-white rounded-lg cursor-pointer hover:bg-slate-50 transition">
-                            <input type="checkbox" id="chk_chart_per_sem" class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
-                            <span class="text-sm font-medium text-slate-700">Manhã vs Tarde (Sem.)</span>
+                            <span class="text-sm font-medium text-slate-700">Ranking Operadores</span>
                         </label>
                     </div>
                 </div>
@@ -489,13 +563,13 @@
         </div>
     </div>
 
-    <!-- Hidden Export Template (Dynamic Layout) -->
+    <!-- Hidden Export Template -->
     <div id="exportCanvasContainer" class="fixed -left-[9999px] top-0 bg-slate-50 flex flex-col font-sans" style="width: 1600px; height: auto; min-height: 900px; z-index: -10;">
         <div class="bg-slate-900 text-white p-6 flex items-center gap-4 border-b-4 border-brand-500" style="height: 100px;">
             <img src="https://i.imgur.com/bEBkelG.png" class="w-14 h-14 object-contain">
             <div>
                 <h1 class="text-3xl font-bold">Registro de Uso da Roçadeira</h1>
-                <p id="exportSubtitle" class="text-slate-300 text-sm mt-1 uppercase tracking-wider font-semibold">Relatório Personalizado</p>
+                <p id="exportSubtitle" class="text-slate-300 text-sm mt-1 uppercase tracking-wider font-semibold">Relatório Personalizado de Desempenho</p>
             </div>
             <div class="ml-auto text-right text-slate-400 text-sm">
                 <p>Data de Geração: <span id="exportDateLabel" class="text-white font-medium"></span></p>
@@ -503,7 +577,6 @@
         </div>
         <div class="p-10 flex flex-col w-full h-auto gap-10">
             <div id="exportKpis" class="flex flex-col gap-8"></div>
-            <!-- Gráficos em largura total: um por linha para preservar leitura e ocupar toda a margem -->
             <div id="exportCharts" class="grid grid-cols-1 gap-10 w-full h-auto pb-10"></div>
         </div>
     </div>
@@ -524,6 +597,8 @@
         let chartOperadorInst = null;
         let chartPeriodoMesInst = null;
         let chartPeriodoSemInst = null;
+        let chartRocBlocoInst = null;
+        let chartRocRendimentoInst = null;
 
         Chart.register(ChartDataLabels);
 
@@ -538,7 +613,6 @@
                 document.getElementById('mainApp').classList.remove('hidden');
                 document.getElementById('mainApp').classList.add('flex');
                 
-                // Dispara o download dos dados apenas após logar com sucesso
                 loadSpreadsheetData();
             } else {
                 err.classList.remove('hidden');
@@ -595,7 +669,6 @@
 
                 const durationMinutes = calcDuration(inicioVal, fimVal);
 
-                // Processamento de Datas
                 let mesStr = 'Sem Data', semStr = 'Sem Data';
                 let mesCode = 0, semCode = 0;
                 let dateIso = '';
@@ -613,7 +686,6 @@
                             mesStr = `${String(month).padStart(2, '0')}/${year}`;
                             mesCode = (year * 100) + month;
 
-                            // Cálculo da Semana ISO
                             const d = new Date(year, month - 1, day);
                             const tdt = new Date(d.valueOf());
                             const dayn = (d.getDay() + 6) % 7;
@@ -733,7 +805,6 @@
             return `${h} h ${m} min`;
         }
 
-        // Formatação Exata Solicitada: "145 h 10 min"
         function formatHMM(totalMinutes) {
             if (!totalMinutes || totalMinutes === 0) return '';
             const h = Math.floor(totalMinutes / 60);
@@ -760,6 +831,8 @@
             let totalManhaMins = 0;
             let totalTardeMins = 0;
             const blocosMap = {}, equipMap = {}, mesMap = {}, opMap = {};
+            const equipCountMap = {}; // Quantidade de usos por roçadeira
+            const rocBlocoMap = {}; // Roçadeira por Bloco
 
             validData.forEach(row => {
                 const m = row.DurationMinutes;
@@ -767,6 +840,11 @@
                 if (m > 0) {
                     blocosMap[row.Local] = (blocosMap[row.Local] || 0) + m;
                     equipMap[row.Equipamento] = (equipMap[row.Equipamento] || 0) + m;
+                    equipCountMap[row.Equipamento] = (equipCountMap[row.Equipamento] || 0) + 1;
+
+                    if (!rocBlocoMap[row.Local]) rocBlocoMap[row.Local] = {};
+                    rocBlocoMap[row.Local][row.Equipamento] = (rocBlocoMap[row.Local][row.Equipamento] || 0) + m;
+
                     if (row.MesCode) mesMap[row.Mes] = (mesMap[row.Mes] || 0) + m;
                     if (row.Operador !== 'Não Informado') opMap[row.Operador] = (opMap[row.Operador] || 0) + m;
 
@@ -817,6 +895,40 @@
             let pctT = totalMins > 0 ? Math.round((totalTardeMins / totalMins) * 100) : 0;
             document.getElementById('kpiManPctManha').innerText = `${pctM}% do total`;
             document.getElementById('kpiManPctTarde').innerText = `${pctT}% do total`;
+
+            // --- TAB 4 KPIs (Roçadeiras) ---
+            let bestRendEquip = 'Nenhuma', maxRendAvg = 0, bestRendTotal = 0;
+            for (let eq in equipMap) {
+                const count = equipCountMap[eq] || 1;
+                const avg = equipMap[eq] / count;
+                if (avg > maxRendAvg) {
+                    maxRendAvg = avg;
+                    bestRendEquip = eq;
+                    bestRendTotal = equipMap[eq];
+                }
+            }
+            document.getElementById('kpiRocMelhorRendimento').innerText = bestRendEquip;
+            document.getElementById('kpiRocMelhorRendimentoVal').innerText = maxRendAvg > 0 ? `Média: ${formatDuration(Math.round(maxRendAvg))} / uso (${formatDuration(bestRendTotal)} total)` : 'Média: 0 h 0 min';
+
+            // Equipamento mais usado no bloco líder
+            let topRocInTopBloco = 'Nenhuma';
+            if (topB !== 'Nenhum' && rocBlocoMap[topB]) {
+                let maxMinsInBloco = 0;
+                for (let eq in rocBlocoMap[topB]) {
+                    if (rocBlocoMap[topB][eq] > maxMinsInBloco) {
+                        maxMinsInBloco = rocBlocoMap[topB][eq];
+                        topRocInTopBloco = eq;
+                    }
+                }
+            }
+            document.getElementById('kpiRocTopBlocoEquip').innerText = topRocInTopBloco;
+            document.getElementById('kpiRocTopBlocoNome').innerText = topB !== 'Nenhum' ? `Bloco: ${topB}` : 'Bloco: -';
+
+            const activeEquipsCount = Object.keys(equipMap).length;
+            document.getElementById('kpiRocTotalAtivas').innerText = activeEquipsCount;
+
+            const avgPerEquip = activeEquipsCount > 0 ? Math.round(totalMins / activeEquipsCount) : 0;
+            document.getElementById('kpiRocMediaGeral').innerText = formatDuration(avgPerEquip);
         }
 
         function renderCharts() {
@@ -852,13 +964,20 @@
             const opData = {};
             const periodoMesData = {};
             const periodoSemData = {};
-            const equipSemanaData = {}; // Para o novo gráfico de Roçadeiras agrupadas por semana
+            const equipSemanaData = {}; 
             const allEquipsChart = new Set();
+            const rocBlocoDetail = {}; // Para gráfico de roçadeiras por bloco
+            const equipCountMap = {}; // Para cálculo de rendimento
 
             validData.forEach(r => {
                 if (r.DurationMinutes > 0) {
                     blocosData[r.Local] = (blocosData[r.Local] || 0) + r.DurationMinutes;
                     equipData[r.Equipamento] = (equipData[r.Equipamento] || 0) + r.DurationMinutes;
+                    equipCountMap[r.Equipamento] = (equipCountMap[r.Equipamento] || 0) + 1;
+
+                    // Mapeamento Roçadeiras por Bloco
+                    if (!rocBlocoDetail[r.Local]) rocBlocoDetail[r.Local] = {};
+                    rocBlocoDetail[r.Local][r.Equipamento] = (rocBlocoDetail[r.Local][r.Equipamento] || 0) + r.DurationMinutes;
                     
                     if (r.MesCode) {
                         if(!mesData[r.MesCode]) mesData[r.MesCode] = { label: r.Mes, total: 0 };
@@ -874,7 +993,6 @@
                         if(r.PeriodoCat === 'Manhã') periodoSemData[r.SemanaCode].manha += r.DurationMinutes;
                         else if(r.PeriodoCat === 'Tarde') periodoSemData[r.SemanaCode].tarde += r.DurationMinutes;
                         
-                        // Populando dados para o novo Gráfico de Roçadeiras vs Semana
                         if(!equipSemanaData[r.SemanaCode]) equipSemanaData[r.SemanaCode] = { label: r.Semana, equips: {} };
                         equipSemanaData[r.SemanaCode].equips[r.Equipamento] = (equipSemanaData[r.SemanaCode].equips[r.Equipamento] || 0) + r.DurationMinutes;
                         allEquipsChart.add(r.Equipamento);
@@ -929,7 +1047,7 @@
                 options: chartDefaults
             });
 
-            // 4. COMPARATIVO: NOVO Gráfico - Uso de Roçadeiras por Semana (Stacked)
+            // 4. COMPARATIVO: Uso de Roçadeiras por Semana
             const esKeys = Object.keys(equipSemanaData).sort((a,b) => a - b);
             const labelsES = esKeys.map(k => equipSemanaData[k].label);
             const equipsArray = Array.from(allEquipsChart).sort();
@@ -984,9 +1102,9 @@
             // Config para Gráficos de Período em Barras
             const periodBarOptions = JSON.parse(JSON.stringify(chartDefaults));
             periodBarOptions.plugins.legend = { display: true, position: 'top' };
-            periodBarOptions.plugins.datalabels.formatter = (val) => val === 0 ? '' : formatHMM(Math.round(val * 60)); // Aplicando formatação 145 h 10 min
+            periodBarOptions.plugins.datalabels.formatter = (val) => val === 0 ? '' : formatHMM(Math.round(val * 60));
 
-            // 6. MANUSEIO: Manhã vs Tarde (Por Mês) - BARRAS
+            // 6. MANUSEIO: Manhã vs Tarde (Por Mês)
             const pmKeys = Object.keys(periodoMesData).sort((a,b) => a - b);
             if(chartPeriodoMesInst) chartPeriodoMesInst.destroy();
             chartPeriodoMesInst = new Chart(document.getElementById('chartPeriodoMes'), {
@@ -1009,7 +1127,7 @@
                 options: periodBarOptions
             });
 
-            // 7. MANUSEIO: Manhã vs Tarde (Por Semana) - BARRAS
+            // 7. MANUSEIO: Manhã vs Tarde (Por Semana)
             const psKeys = Object.keys(periodoSemData).sort((a,b) => a - b);
             if(chartPeriodoSemInst) chartPeriodoSemInst.destroy();
             chartPeriodoSemInst = new Chart(document.getElementById('chartPeriodoSemana'), {
@@ -1030,6 +1148,98 @@
                     ]
                 },
                 options: periodBarOptions
+            });
+
+            // 8. ROÇADEIRAS: Roçadeiras Mais Usadas por Bloco (Gráfico de Barras Agrupado por Bloco)
+            const blocosList = Object.keys(rocBlocoDetail).sort();
+            const allEquipNames = Array.from(allEquipsChart).length > 0 ? Array.from(allEquipsChart).sort() : Object.keys(equipData).sort();
+            
+            const rocBlocoDatasets = allEquipNames.map((eName, idx) => ({
+                label: eName,
+                data: blocosList.map(b => parseFloat(((rocBlocoDetail[b][eName] || 0)/60).toFixed(2))),
+                backgroundColor: colorsList[idx % colorsList.length],
+                borderRadius: 4
+            }));
+
+            if(chartRocBlocoInst) chartRocBlocoInst.destroy();
+            chartRocBlocoInst = new Chart(document.getElementById('chartRocBloco'), {
+                type: 'bar',
+                data: {
+                    labels: blocosList,
+                    datasets: rocBlocoDatasets
+                },
+                options: {
+                    ...chartDefaults,
+                    plugins: {
+                        ...chartDefaults.plugins,
+                        legend: { display: true, position: 'top', labels: { boxWidth: 12 } },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            color: '#475569',
+                            font: { weight: 'bold', size: 9 },
+                            formatter: (val) => val === 0 ? '' : formatHMM(Math.round(val * 60))
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { beginAtZero: true, title: { display: true, text: 'Horas' } }
+                    }
+                }
+            });
+
+            // 9. ROÇADEIRAS: Rendimento por Roçadeira (Performance e Rendimento Médio por Uso)
+            const sortedEquipsByRend = Object.keys(equipData).sort((a,b) => {
+                const avgA = equipData[a] / (equipCountMap[a] || 1);
+                const avgB = equipData[b] / (equipCountMap[b] || 1);
+                return avgB - avgA; // Decrescente por rendimento médio por sessão
+            });
+
+            const bestRendName = sortedEquipsByRend[0] || '';
+            const bgColorsRend = sortedEquipsByRend.map(eq => eq === bestRendName ? '#f59e0b' : '#3b82f6'); // Destaque Dourado para o #1 em rendimento
+
+            const avgDataRend = sortedEquipsByRend.map(eq => parseFloat(((equipData[eq] / (equipCountMap[eq] || 1))/60).toFixed(2)));
+            const totalDataRend = sortedEquipsByRend.map(eq => parseFloat((equipData[eq]/60).toFixed(2)));
+
+            if(chartRocRendimentoInst) chartRocRendimentoInst.destroy();
+            chartRocRendimentoInst = new Chart(document.getElementById('chartRocRendimento'), {
+                type: 'bar',
+                data: {
+                    labels: sortedEquipsByRend,
+                    datasets: [
+                        {
+                            label: 'Rendimento Médio por Uso (Horas)',
+                            data: avgDataRend,
+                            backgroundColor: bgColorsRend,
+                            borderRadius: 6
+                        },
+                        {
+                            label: 'Tempo Total Acumulado (Horas)',
+                            data: totalDataRend,
+                            backgroundColor: '#93c5fd',
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    ...chartDefaults,
+                    plugins: {
+                        ...chartDefaults.plugins,
+                        legend: { display: true, position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => ` ${ctx.dataset.label}: ${formatHMM(Math.round(ctx.raw * 60))}`
+                            }
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            color: '#1e293b',
+                            font: { weight: 'bold', size: 10 },
+                            formatter: (val) => val === 0 ? '' : formatHMM(Math.round(val * 60))
+                        }
+                    }
+                }
             });
         }
 
@@ -1059,7 +1269,7 @@
         }
 
         function switchTab(tabName) {
-            const tabs = ['gerais', 'comparativo', 'manuseio', 'tabela'];
+            const tabs = ['gerais', 'comparativo', 'manuseio', 'rocadeiras', 'tabela'];
             
             tabs.forEach(t => {
                 const content = document.getElementById(`tabContent-${t}`);
@@ -1085,6 +1295,9 @@
                     if(chartOperadorInst) chartOperadorInst.resize();
                     if(chartPeriodoMesInst) chartPeriodoMesInst.resize();
                     if(chartPeriodoSemInst) chartPeriodoSemInst.resize();
+                } else if (tabName === 'rocadeiras') {
+                    if(chartRocBlocoInst) chartRocBlocoInst.resize();
+                    if(chartRocRendimentoInst) chartRocRendimentoInst.resize();
                 }
             }, 50);
         }
@@ -1100,16 +1313,12 @@
         async function exportReport(format) {
             updateStatusBadge('syncing', 'Gerando Documento...');
             
-            // Popula os dados do Container de Exportação Dinâmico
             await prepareExportCanvas();
             
             const exportElement = document.getElementById('exportCanvasContainer');
-            
-            // Permite que o container se expanda dinamicamente baseado na quantidade de gráficos escolhidos
             const originalHeight = exportElement.style.height;
             exportElement.style.height = 'auto';
 
-            // Renderiza
             const canvas = await html2canvas(exportElement, { 
                 scale: 2.5, 
                 useCORS: true, 
@@ -1120,7 +1329,6 @@
                 imageTimeout: 0
             });
             
-            // Retorna o estilo
             exportElement.style.height = originalHeight;
 
             const timestamp = new Date().getTime();
@@ -1134,7 +1342,6 @@
             } else if (format === 'pdf') {
                 const imgData = canvas.toDataURL('image/jpeg', 0.95);
                 
-                // Calcula a altura exata do PDF mantendo a largura de 1280px para gerar página contínua
                 const pdfHeight = (canvas.height / canvas.width) * 1280;
                 const orientation = pdfHeight > 1280 ? 'portrait' : 'landscape';
                 
@@ -1151,37 +1358,33 @@
             const kpiTarget = document.getElementById('exportKpis');
             const chartTarget = document.getElementById('exportCharts');
             
-            // Preenche data
             const dateObj = new Date();
             document.getElementById('exportDateLabel').innerText = dateObj.toLocaleDateString('pt-BR') + ' ' + dateObj.toLocaleTimeString('pt-BR');
             
             kpiTarget.innerHTML = '';
             chartTarget.innerHTML = '';
 
-            // Clona e Anexa KPIs Selecionados
             const kpisToClone = [];
             if(document.getElementById('chk_kpi_gerais').checked) kpisToClone.push(document.querySelector('#tabContent-gerais .grid.grid-cols-1.md\\:grid-cols-3'));
             if(document.getElementById('chk_kpi_comp').checked) kpisToClone.push(document.querySelector('#tabContent-comparativo .grid.grid-cols-1.md\\:grid-cols-3'));
             if(document.getElementById('chk_kpi_man').checked) kpisToClone.push(document.querySelector('#tabContent-manuseio .grid.grid-cols-1.md\\:grid-cols-3'));
+            if(document.getElementById('chk_kpi_roc').checked) kpisToClone.push(document.querySelector('#tabContent-rocadeiras .grid'));
 
             kpisToClone.forEach(grid => {
                 if(grid) {
                     const clone = grid.cloneNode(true);
-                    // Força estilo 3 colunas padrão para o relatório horizontal
                     clone.className = "grid grid-cols-3 gap-6";
                     kpiTarget.appendChild(clone);
                 }
             });
 
-            // Clona e Anexa Gráficos Selecionados
             const chartsToClone = [];
             if(document.getElementById('chk_chart_bloco').checked) chartsToClone.push('chartBloco');
             if(document.getElementById('chk_chart_equip').checked) chartsToClone.push('chartEquipamento');
             if(document.getElementById('chk_chart_mes').checked) chartsToClone.push('chartMes');
-            if(document.getElementById('chk_chart_equip_sem').checked) chartsToClone.push('chartBlocoSemana'); // Reaproveitou o ID original
+            if(document.getElementById('chk_chart_roc_bloco').checked) chartsToClone.push('chartRocBloco');
+            if(document.getElementById('chk_chart_roc_rend').checked) chartsToClone.push('chartRocRendimento');
             if(document.getElementById('chk_chart_op').checked) chartsToClone.push('chartOperador');
-            if(document.getElementById('chk_chart_per_mes').checked) chartsToClone.push('chartPeriodoMes');
-            if(document.getElementById('chk_chart_per_sem').checked) chartsToClone.push('chartPeriodoSemana');
 
             chartsToClone.forEach(id => {
                 const canvas = document.getElementById(id);
@@ -1206,7 +1409,6 @@
                 }
             });
             
-            // Aguarda a renderização no DOM
             return new Promise(res => setTimeout(res, 300));
         }
     </script>
