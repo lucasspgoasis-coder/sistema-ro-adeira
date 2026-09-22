@@ -93,11 +93,11 @@
         <p class="mt-8 text-slate-500 text-xs font-medium tracking-wider uppercase">Controle de Equipamentos &copy; 2026</p>
     </div>
 
-    <!-- Main App Container -->
+    <!-- Main App Container (Standard page scrolling) -->
     <div id="mainApp" class="hidden min-h-screen flex-col bg-slate-50">
 
     <!-- Header -->
-    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+    <header class="shrink-0 bg-slate-900 text-white shadow-lg z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div class="flex items-center space-x-3">
@@ -191,8 +191,9 @@
         </div>
     </header>
 
-    <!-- Main Container -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <!-- Main Container (Flows normally with page scroll) -->
+    <main class="flex-1 w-full py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
         <!-- TAB 1: DADOS GERAIS -->
         <div id="tabContent-gerais" class="tab-content active space-y-6">
@@ -491,6 +492,7 @@
             </div>
         </div>
 
+        </div>
     </main>
 
     <!-- Export Modal -->
