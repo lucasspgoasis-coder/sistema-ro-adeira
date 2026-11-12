@@ -68,10 +68,7 @@ function reportMeta(rows){
 }
 function reportClone(value){return Array.isArray(value)?value.map(reportClone):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,reportClone(item)])):value;}
 function reportChartGroups(chart){
-    const horizontal=chart.config.options.indexAxis==='y';
-    const size=horizontal?8:7,groups=[];
-    for(let start=0;start<chart.data.labels.length;start+=size)groups.push({start,end:Math.min(start+size,chart.data.labels.length)});
-    return groups.length?groups:[{start:0,end:0}];
+    return [{start:0,end:chart.data.labels.length}];
 }
 async function reportChartImage(source,group){
     // Render a fresh chart so hidden tabs, small screens and dashboard clipping cannot affect exports.
@@ -84,17 +81,30 @@ async function reportChartImage(source,group){
         const options=reportClone(source.config.options);
         chart=new Chart(canvas,{type:source.config.type,data,options,plugins:[{id:'reportLayout',beforeInit(instance){
             const opts=instance.config.options;
+            const count=Math.max(1,instance.data.labels.length);
+            const labelSize=Math.max(4,Math.min(14,Math.floor((opts.indexAxis==='y'?440:660)/count)));
             opts.responsive=false;opts.maintainAspectRatio=false;opts.animation=false;opts.devicePixelRatio=2;
             opts.layout={padding:{left:20,right:120,top:40,bottom:35}};
             opts.plugins.legend={display:false};opts.plugins.tooltip={enabled:false};
-            opts.plugins.datalabels={...opts.plugins.datalabels,display:'auto',clamp:true,clip:false,font:{size:14,weight:'600'},padding:5,offset:6};
+            opts.plugins.datalabels={...opts.plugins.datalabels,display:'auto',clamp:true,clip:false,font:{size:labelSize,weight:'600'},padding:2,offset:3};
             const axis=opts.indexAxis==='y'?'y':'x';
-            if(opts.scales?.[axis])opts.scales[axis].ticks={...opts.scales[axis].ticks,autoSkip:false,minRotation:0,maxRotation:0,font:{size:14},callback:function(value){return reportWrap(this.getLabelForValue(value),axis==='y'?190:100,14);}};
+            if(opts.scales?.[axis])opts.scales[axis].ticks={...opts.scales[axis].ticks,autoSkip:false,minRotation:axis==='x'&&count>12?60:0,maxRotation:axis==='x'&&count>12?60:0,font:{size:labelSize},callback:function(value){return reportWrap(this.getLabelForValue(value),axis==='y'?190:Math.max(35,800/count),labelSize);}};
             const valuesAxis=axis==='y'?'x':'y';if(opts.scales?.[valuesAxis]){opts.scales[valuesAxis].grace='28%';opts.scales[valuesAxis].ticks={...opts.scales[valuesAxis].ticks,font:{size:13}};}
         }}]});
         chart.update('none');
         return chart.toBase64Image('image/png',1);
     }finally{chart?.destroy();host.remove();}
+}
+function reportFitContent(page,content){
+    const scale=Math.min(1,(REPORT.bottom-page.y-20)/Math.max(1,content.y));
+    const left=80+(960-960*scale)/2;
+    for(const command of content.commands){
+        const fitted={...command,x:left+command.x*scale,y:page.y+command.y*scale};
+        if(command.type==='text')fitted.size=command.size*scale;
+        else{fitted.w=command.w*scale;fitted.h=command.h*scale;}
+        page.commands.push(fitted);
+    }
+    page.y+=content.y*scale;
 }
 function reportLegend(pages,page,meta,title,datasets){
     for(const dataset of datasets.filter(dataset=>!dataset.hidden)){
@@ -129,34 +139,41 @@ function reportTable(pages,meta,rows){
 async function reportBuildPages(rows){
     const meta={...reportMeta(rows),...reportIdentity(),logo:await reportLoadLogo()},pages=[];
     if(reportWrap(meta.filters,960,17).length>3){const fullFilters=meta.filters;meta.filters='Filtros completos na seção de filtros do relatório.';let page=reportNewPage(pages,meta,'Filtros do relatório');reportNextText(pages,page,meta,'Filtros do relatório',fullFilters,{size:20});}
+    const indicators={commands:[],y:0};
     for(const [check,panel,title] of [['chk_kpi_gerais','gerais','Indicadores gerais'],['chk_kpi_comp','comparativo','Comparativo de períodos'],['chk_kpi_man','manuseio','Operadores e turnos'],['chk_kpi_roc','rocadeiras','Indicadores por roçadeira']]){
         if(!document.getElementById(check).checked)continue;
         const source=document.querySelector('#tabContent-'+panel+' .grid');if(!source)continue;
-        let page=reportNewPage(pages,meta,title);
+        reportRect(indicators,0,indicators.y,960,38,'#12372a');
+        reportText(indicators,title,16,indicators.y+26,{size:20,bold:true,color:'#ffffff',width:928});
+        indicators.y+=58;
         for(const card of source.children){
             const texts=card.innerText.split(/\r?\n/).map(text=>text.trim()).filter(Boolean);
             if(!texts.length)continue;
-            const lines=texts.flatMap((text,index)=>reportWrap(text,900,index===1?28:19,index===1));
-            if(page.y+Math.min(lines.length*36+48,250)>REPORT.bottom)page=reportNewPage(pages,meta,title,true);
-            reportRect(page,80,page.y-22,960,6,'#15803d');
-            page.y+=12;
-            for(let index=0;index<texts.length;index++){page=reportNextText(pages,page,meta,title,texts[index],{size:index===1?28:19,bold:index===1,color:index===1?REPORT.ink:REPORT.muted,width:900});page.y+=9;}
-            page.y+=15;reportRect(page,80,page.y,960,1,'#e2e8f0');page.y+=32;
+            for(let index=0;index<texts.length;index++){
+                indicators.y=reportText(indicators,texts[index],16,indicators.y,{size:index===1?25:18,bold:index===1,width:928,lineHeight:index===1?32:25});
+            }
+            indicators.y+=12;reportRect(indicators,0,indicators.y,960,1,'#dce7e0');indicators.y+=28;
         }
+        indicators.y+=16;
+    }
+    if(indicators.commands.length){
+        const page=reportNewPage(pages,meta,'Resumo dos indicadores');
+        reportFitContent(page,indicators);
     }
     for(const [check,id,title] of reportChartItems){
         if(!document.getElementById(check).checked)continue;
         const chart=chartList().find(item=>item.canvas.id===id);if(!chart)continue;
-        const groups=reportChartGroups(chart);
-        for(let index=0;index<groups.length;index++){
-            let page=reportNewPage(pages,meta,title+(groups.length>1?' · parte '+(index+1)+'/'+groups.length:''));
-            const datasets=chart.data.datasets.map((dataset,i)=>({...dataset,hidden:!chart.isDatasetVisible(i)}));
-            page=reportLegend(pages,page,meta,title,datasets);
-            if(page.y+680>REPORT.bottom)page=reportNewPage(pages,meta,title,true);
-            const image=await reportChartImage(chart,groups[index]);
-            page.commands.push({type:'image',image,x:80,y:page.y,w:960,h:650});page.y+=680;
-            page=reportNextText(pages,page,meta,title,'Tempo em horas e minutos. Os filtros do relatório são aplicados. Gráficos extensos continuam nas páginas seguintes.',{size:17,color:REPORT.muted});
+        const page=reportNewPage(pages,meta,title),content={commands:[],y:20};
+        for(const dataset of chart.data.datasets.filter((dataset,index)=>chart.isDatasetVisible(index))){
+            const color=Array.isArray(dataset.backgroundColor)?dataset.backgroundColor[0]:dataset.backgroundColor;
+            reportRect(content,0,content.y-13,13,13,typeof color==='string'?color:'#15803d');
+            content.y=reportText(content,dataset.label||'Tempo de operação',23,content.y,{size:17,width:910,lineHeight:25})+10;
         }
+        content.y+=12;
+        const image=await reportChartImage(chart,reportChartGroups(chart)[0]);
+        content.commands.push({type:'image',image,x:0,y:content.y,w:960,h:650});content.y+=680;
+        content.y=reportText(content,'Tempo em horas e minutos. Todos os itens do gráfico estão nesta página.',0,content.y,{size:16,color:REPORT.muted,width:960});
+        reportFitContent(page,content);
     }
     if(document.getElementById('chk_records').checked)reportTable(pages,meta,rows);
     if(!pages.length)throw Error('Selecione pelo menos um conteúdo disponível.');
