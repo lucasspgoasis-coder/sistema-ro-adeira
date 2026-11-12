@@ -1,4 +1,3 @@
-const reportEscape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const chartList = () => [chartBlocoInst,chartEquipInst,chartMesInst,chartBlocoSemanaInst,chartOperadorInst,chartPeriodoMesInst,chartPeriodoSemInst,chartRocBlocoInst,chartRocRendimentoInst].filter(Boolean);
 const reportChartItems = [
  ['chk_chart_bloco','chartBloco','Tempo por bloco'],['chk_chart_equip','chartEquipamento','Tempo por roçadeira'],['chk_chart_mes','chartMes','Tempo por mês'],['chk_chart_roc_bloco','chartRocBloco','Roçadeiras por bloco'],['chk_chart_roc_rend','chartRocRendimento','Tempo médio e total por roçadeira'],['chk_chart_op','chartOperador','Tempo por operador'],['chk_chart_semana','chartBlocoSemana','Equipamentos por semana'],['chk_chart_turnomes','chartPeriodoMes','Turnos por mês'],['chk_chart_turnosemana','chartPeriodoSemana','Turnos por semana']

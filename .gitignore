@@ -1,0 +1,7 @@
+# Arquivos locais e temporários
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.log
+*.tmp
+node_modules/

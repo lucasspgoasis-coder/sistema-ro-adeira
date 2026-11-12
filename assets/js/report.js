@@ -1,6 +1,16 @@
 /* Fixed A4 scenes shared by PDF and JPEG. No screenshots of dashboard cards. */
-const REPORT = {width:1120,height:1584,margin:80,bottom:1430,ink:'#243547',muted:'#64748b',accent:'#c2410c'};
+const REPORT = {width:1120,height:1584,margin:80,bottom:1430,ink:'#18382d',muted:'#52645e',accent:'#15803d'};
 const reportMeasure = document.createElement('canvas').getContext('2d');
+async function reportLoadLogo(){
+    const image=new Image();image.src='assets/images/logo.png';await image.decode();
+    const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
+    canvas.getContext('2d').drawImage(image,0,0);
+    return canvas.toDataURL('image/png');
+}
+function reportIdentity(){
+    const value=id=>document.getElementById(id)?.value.trim()||'';
+    return {title:value('reportTitle')||'Relatório de operação',unit:value('reportUnit')||'Não informada',notes:value('reportNotes')};
+}
 function reportWrap(value,width,size=20,bold=false) {
     reportMeasure.font=(bold?'bold ':'')+size+'px Arial';
     const lines=[];
@@ -26,13 +36,22 @@ function reportText(page,text,x,y,{size=20,bold=false,color=REPORT.ink,width=960
 function reportRect(page,x,y,w,h,color){page.commands.push({type:'rect',x,y,w,h,color});}
 function reportNewPage(pages,meta,title,continued=false){
     const page={commands:[],y:0};pages.push(page);
-    reportRect(page,80,67,44,5,'#ea580c');
-    reportText(page,'GESTÃO DE ROÇADEIRAS',80,101,{size:17,bold:true,color:REPORT.accent});
-    let y=reportText(page,title+(continued?' · continuação':''),80,150,{size:32,bold:true,width:960,lineHeight:40});
-    y=reportText(page,meta.period+'  |  Gerado em '+meta.generated,80,y+7,{size:17,color:REPORT.muted,lineHeight:25});
+    reportRect(page,0,0,1120,10,'#12372a');
+    page.commands.push({type:'image',image:meta.logo,x:80,y:30,w:115,h:115});
+    reportText(page,'CONTROLE DE EQUIPAMENTOS',220,55,{size:15,bold:true,color:REPORT.accent,width:820});
+    reportText(page,meta.title,220,91,{size:28,bold:true,width:800,lineHeight:34});
+    reportRect(page,80,170,960,2,'#cbd9d0');
+    reportRect(page,80,170,100,4,'#15803d');
+    let y=reportText(page,title+(continued?' · continuação':''),80,222,{size:30,bold:true,width:960,lineHeight:38});
+    y=reportText(page,'UNIDADE / PROPRIEDADE',80,y+8,{size:13,bold:true,color:REPORT.accent,lineHeight:23});
+    y=reportText(page,meta.unit,80,y,{size:19,bold:true,width:960,lineHeight:27});
+    y=reportText(page,'Período: '+meta.period+'  |  Emissão: '+meta.generated,80,y+7,{size:17,color:REPORT.muted,lineHeight:25});
     y=reportText(page,meta.filters,80,y+4,{size:17,color:REPORT.muted,lineHeight:25});
-    y=reportText(page,meta.summary,80,y+5,{size:17,color:REPORT.muted,lineHeight:25});
-    reportRect(page,80,y+8,960,1,'#e2e8f0');page.y=y+45;
+    const summaryLines=reportWrap(meta.summary,912,18,true);
+    reportRect(page,80,y+6,960,summaryLines.length*27+28,'#eaf3ed');
+    reportRect(page,80,y+6,5,summaryLines.length*27+28,'#15803d');
+    y=reportText(page,summaryLines,104,y+33,{size:18,bold:true,lineHeight:27});
+    page.y=y+43;
     return page;
 }
 function reportNextText(pages,page,meta,title,text,style={}){
@@ -90,12 +109,12 @@ function reportLegend(pages,page,meta,title,datasets){
     page.y+=18;return page;
 }
 function reportTable(pages,meta,rows){
-    const title='Registros de operação',widths=[120,130,140,205,95,95,175],labels=['Data','Bloco','Roçadeira','Operador','Início','Fim','Duração'];
+    const title='Registros de operação',widths=[105,115,115,175,110,85,85,170],labels=['Data','Bloco','Roçadeira','Operador','Turno','Início','Fim','Duração'];
     let page;
-    const newPage=()=>{page=reportNewPage(pages,meta,title,Boolean(page));const y=page.y;let x=80;for(let i=0;i<labels.length;i++){reportRect(page,x,y-20,widths[i],49,'#fff0e6');reportText(page,labels[i],x+9,y,{size:17,bold:true,width:widths[i]-18,lineHeight:23});x+=widths[i];}page.y+=52;};
+    const newPage=()=>{page=reportNewPage(pages,meta,title,Boolean(page));const y=page.y;let x=80;for(let i=0;i<labels.length;i++){reportRect(page,x,y-20,widths[i],49,'#12372a');reportText(page,labels[i],x+9,y,{size:16,bold:true,color:'#ffffff',width:widths[i]-18,lineHeight:23});x+=widths[i];}page.y+=52;};
     newPage();
     rows.forEach((row,rowIndex)=>{
-        const values=[row.Data,row.Local,row.Equipamento,row.Operador,row.Inicio,row.Fim,formatDuration(row.DurationMinutes)];
+        const values=[row.Data,row.Local,row.Equipamento,row.Operador,row.Periodo,row.Inicio,row.Fim,formatDuration(row.DurationMinutes)];
         const wrapped=values.map((value,i)=>reportWrap(value,widths[i]-18,17));
         let offset=0,max=Math.max(...wrapped.map(lines=>lines.length));
         while(offset<max){
@@ -108,7 +127,7 @@ function reportTable(pages,meta,rows){
     });
 }
 async function reportBuildPages(rows){
-    const meta=reportMeta(rows),pages=[];
+    const meta={...reportMeta(rows),...reportIdentity(),logo:await reportLoadLogo()},pages=[];
     if(reportWrap(meta.filters,960,17).length>3){const fullFilters=meta.filters;meta.filters='Filtros completos na seção de filtros do relatório.';let page=reportNewPage(pages,meta,'Filtros do relatório');reportNextText(pages,page,meta,'Filtros do relatório',fullFilters,{size:20});}
     for(const [check,panel,title] of [['chk_kpi_gerais','gerais','Indicadores gerais'],['chk_kpi_comp','comparativo','Comparativo de períodos'],['chk_kpi_man','manuseio','Operadores e turnos'],['chk_kpi_roc','rocadeiras','Indicadores por roçadeira']]){
         if(!document.getElementById(check).checked)continue;
@@ -119,6 +138,8 @@ async function reportBuildPages(rows){
             if(!texts.length)continue;
             const lines=texts.flatMap((text,index)=>reportWrap(text,900,index===1?28:19,index===1));
             if(page.y+Math.min(lines.length*36+48,250)>REPORT.bottom)page=reportNewPage(pages,meta,title,true);
+            reportRect(page,80,page.y-22,960,6,'#15803d');
+            page.y+=12;
             for(let index=0;index<texts.length;index++){page=reportNextText(pages,page,meta,title,texts[index],{size:index===1?28:19,bold:index===1,color:index===1?REPORT.ink:REPORT.muted,width:900});page.y+=9;}
             page.y+=15;reportRect(page,80,page.y,960,1,'#e2e8f0');page.y+=32;
         }
@@ -139,8 +160,9 @@ async function reportBuildPages(rows){
     }
     if(document.getElementById('chk_records').checked)reportTable(pages,meta,rows);
     if(!pages.length)throw Error('Selecione pelo menos um conteúdo disponível.');
+    if(meta.notes){let page=reportNewPage(pages,meta,'Observações');reportNextText(pages,page,meta,'Observações',meta.notes,{size:20});}
     pages.forEach((page,index)=>{
-        reportRect(page,80,1448,960,1,'#e2e8f0');
+        reportRect(page,80,1448,960,2,'#cbd9d0');
         reportText(page,'Relatório de operação · '+(index+1)+' / '+pages.length,80,1473,{size:16,color:REPORT.muted});
         reportText(page,meta.withoutTime+' registros sem duração válida. Tempo por uso não mede área roçada.',80,1498,{size:15,color:REPORT.muted});
     });
@@ -166,37 +188,31 @@ async function reportJpegPage(page){
     }
     const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.94));canvas.width=canvas.height=1;if(!blob)throw Error('Não foi possível gerar a página JPEG.');return blob;
 }
-// Uncompressed ZIP: pages are already JPEG-compressed. One download avoids browser limits on multiple downloads.
-function reportCrc32(bytes){let crc=0xffffffff;for(const byte of bytes){crc^=byte;for(let bit=0;bit<8;bit++)crc=(crc>>>1)^((crc&1)?0xedb88320:0);}return (crc^0xffffffff)>>>0;}
-async function reportZip(files){
-    const parts=[],central=[];let offset=0;
-    for(const file of files){
-        const name=new TextEncoder().encode(file.name),data=new Uint8Array(await file.blob.arrayBuffer()),crc=reportCrc32(data);
-        const local=new Uint8Array(30+name.length),view=new DataView(local.buffer);view.setUint32(0,0x04034b50,true);view.setUint16(4,20,true);view.setUint32(14,crc,true);view.setUint32(18,data.length,true);view.setUint32(22,data.length,true);view.setUint16(26,name.length,true);local.set(name,30);parts.push(local,data);
-        const entry=new Uint8Array(46+name.length),head=new DataView(entry.buffer);head.setUint32(0,0x02014b50,true);head.setUint16(4,20,true);head.setUint16(6,20,true);head.setUint32(16,crc,true);head.setUint32(20,data.length,true);head.setUint32(24,data.length,true);head.setUint16(28,name.length,true);head.setUint32(42,offset,true);entry.set(name,46);central.push(entry);offset+=local.length+data.length;
-    }
-    const length=central.reduce((sum,part)=>sum+part.length,0),end=new Uint8Array(22),view=new DataView(end.buffer);view.setUint32(0,0x06054b50,true);view.setUint16(8,files.length,true);view.setUint16(10,files.length,true);view.setUint32(12,length,true);view.setUint32(16,offset,true);return new Blob([...parts,...central,end],{type:'application/zip'});
-}
 async function exportReport(format){
     if(reportBusy)return;
     if(!validData.length){alert('Não há registros para exportar. Ajuste os filtros.');return;}
     const rows=validData.map(row=>({...row})),name='relatorio_rocadeiras_'+new Date().toLocaleDateString('sv-SE');
-    const controls=[...document.querySelectorAll('#exportModal button, #exportModal input')];
+    const controls=[...document.querySelectorAll('#exportModal button, #exportModal input, #exportModal textarea')];
     reportBusy=true;controls.forEach(control=>control.disabled=true);
     try{
         if(format==='csv'){
+            const identity=reportIdentity();
             const fields=['Data','Operador','Periodo','Local','Equipamento','Inicio','Fim','DurationMinutes'];
-            const labels=['Data','Operador','Turno','Bloco','Roçadeira','Início','Fim','Duração em minutos'];
+            const labels=['Data','Operador','Turno','Bloco','Roçadeira','Início','Fim','Duração em minutos','Título do relatório','Unidade','Observações'];
             const cell=value=>'"'+String(value??'').replace(/^[=+@-]/,"'$&").replace(/"/g,'""')+'"';
-            const csv=[labels.map(cell).join(';'),...rows.map(row=>fields.map(key=>cell(row[key])).join(';'))].join('\r\n');
+            const csv=[labels.map(cell).join(';'),...rows.map(row=>[...fields.map(key=>row[key]),identity.title,identity.unit,identity.notes].map(cell).join(';'))].join('\r\n');
             downloadReportBlob(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}),name+'.csv');
         }else{
             await document.fonts.ready;updateStatusBadge('syncing','Preparando páginas…');
             const pages=await reportBuildPages(rows);
             if(format==='pdf')reportPdf(pages,name);
             else{
-                const files=[];for(let index=0;index<pages.length;index++){updateStatusBadge('syncing','Gerando imagem '+(index+1)+'/'+pages.length);files.push({name:name+'_pagina_'+String(index+1).padStart(3,'0')+'.jpg',blob:await reportJpegPage(pages[index])});}
-                downloadReportBlob(files.length===1?files[0].blob:await reportZip(files),name+(files.length===1?'.jpg':'.zip'));
+                for(let index=0;index<pages.length;index++){
+                    updateStatusBadge('syncing','Gerando imagem '+(index+1)+'/'+pages.length);
+                    const blob=await reportJpegPage(pages[index]);
+                    const filename=pages.length===1?name+'.jpg':name+'_pagina_'+String(index+1).padStart(3,'0')+'.jpg';
+                    downloadReportBlob(blob,filename);
+                }
             }
         }
         reportBusy=false;closeExportModal();
