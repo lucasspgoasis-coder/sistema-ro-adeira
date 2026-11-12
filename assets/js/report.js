@@ -168,6 +168,27 @@ async function reportBuildPages(rows){
     });
     return pages;
 }
+function reportSingleSheet(pages){
+    if(pages.length===1)return pages[0];
+    // Fit every selected section onto one A4 sheet without discarding records.
+    const columns=Math.ceil(Math.sqrt(pages.length)),rows=Math.ceil(pages.length/columns);
+    const gap=18,margin=24;
+    const cellWidth=(REPORT.width-2*margin-gap*(columns-1))/columns;
+    const cellHeight=(REPORT.height-2*margin-gap*(rows-1))/rows;
+    const scale=Math.min(cellWidth/REPORT.width,cellHeight/REPORT.height);
+    const sheet={commands:[]};
+    pages.forEach((page,index)=>{
+        const x=margin+(index%columns)*(cellWidth+gap)+(cellWidth-REPORT.width*scale)/2;
+        const y=margin+Math.floor(index/columns)*(cellHeight+gap);
+        for(const command of page.commands){
+            const transformed={...command,x:x+command.x*scale,y:y+command.y*scale};
+            if(command.type==='text')transformed.size=command.size*scale;
+            else{transformed.w=command.w*scale;transformed.h=command.h*scale;}
+            sheet.commands.push(transformed);
+        }
+    });
+    return sheet;
+}
 function reportPdf(pages,name){
     const pdf=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'}),scale=210/REPORT.width;
     pages.forEach((page,index)=>{
@@ -204,15 +225,12 @@ async function exportReport(format){
             downloadReportBlob(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}),name+'.csv');
         }else{
             await document.fonts.ready;updateStatusBadge('syncing','Preparando páginas…');
-            const pages=await reportBuildPages(rows);
+            const pages=[reportSingleSheet(await reportBuildPages(rows))];
             if(format==='pdf')reportPdf(pages,name);
             else{
-                for(let index=0;index<pages.length;index++){
-                    updateStatusBadge('syncing','Gerando imagem '+(index+1)+'/'+pages.length);
-                    const blob=await reportJpegPage(pages[index]);
-                    const filename=pages.length===1?name+'.jpg':name+'_pagina_'+String(index+1).padStart(3,'0')+'.jpg';
-                    downloadReportBlob(blob,filename);
-                }
+                updateStatusBadge('syncing','Gerando imagem única…');
+                const blob=await reportJpegPage(pages[0]);
+                downloadReportBlob(blob,name+'.jpg');
             }
         }
         reportBusy=false;closeExportModal();
