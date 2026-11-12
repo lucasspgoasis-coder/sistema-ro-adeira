@@ -27,7 +27,7 @@ No GitHub Pages, publique a raiz do repositório e mantenha a pasta `assets` jun
 
 - A URL da planilha está em `CSV_URL`, no arquivo `assets/js/app.js`.
 - A ordem dos scripts no HTML deve ser mantida: `app.js`, `dashboard.js` e `report.js`.
-- PDF e JPEG usam o gerador de páginas de `report.js`. PDF e JPEG geram um único arquivo com uma única folha A4. As seções são reduzidas proporcionalmente para caber, preservando todo o conteúdo. Para melhorar a legibilidade, selecione menos seções ou filtre os registros.
+- PDF e JPEG usam o gerador de páginas de `report.js`. PDF gera um único arquivo com páginas A4 em sequência. JPEG gera uma única imagem vertical, com as seções uma abaixo da outra. Os indicadores gerais permanecem agrupados. Imagens extensas têm a resolução ajustada aos limites do navegador.
 - Os arquivos usam UTF-8 para preservar os acentos.
 
 ## Limitação do acesso
