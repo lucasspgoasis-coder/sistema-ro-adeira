@@ -18,23 +18,7 @@ let chartRocRendimentoInst = null;
 
 Chart.register(ChartDataLabels);
 
-function handleLogin(e) {
-    e.preventDefault();
-    const u = document.getElementById('usernameInput').value;
-    const p = document.getElementById('passwordInput').value;
-    const err = document.getElementById('loginError');
-    
-    if(u === 'adm123' && p === 'lucas@2026') {
-        document.getElementById('loginScreen').classList.add('hidden');
-        document.getElementById('mainApp').classList.remove('hidden');
-        document.getElementById('mainApp').classList.add('flex');
-        
-        loadSpreadsheetData();
-    } else {
-        err.classList.remove('hidden');
-        setTimeout(() => err.classList.add('hidden'), 3000);
-    }
-}
+window.addEventListener('DOMContentLoaded', loadSpreadsheetData, {once:true});
 
 function loadSpreadsheetData() {
     updateStatusBadge('syncing');
