@@ -25,7 +25,7 @@
     <!-- Biblioteca de exportação PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/base.css?v=20261116">
     <link rel="stylesheet" href="assets/css/dashboard.css">
     <link rel="icon" type="image/png" href="assets/images/logo.png">
 </head>
@@ -82,8 +82,8 @@
                     <button id="tabBtn-rocadeiras" onclick="switchTab('rocadeiras')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:bg-slate-800 hover:text-white">
                         <i class="fa-solid fa-tractor"></i> <span>Roçadeiras</span>
                     </button>
-                    <button id="tabBtn-tabela" onclick="switchTab('tabela')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:bg-slate-800 hover:text-white">
-                        <i class="fa-solid fa-table-list"></i> <span>Tabela de Registros</span>
+                    <button id="tabBtn-rendimento" onclick="switchTab('rendimento')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:bg-slate-800 hover:text-white">
+                        <i class="fa-solid fa-table-list"></i> <span>Rendimento</span>
                     </button>
                 </nav>
             </div>
@@ -146,7 +146,7 @@
                         </div>
                         <div class="flex flex-col">
                             <span id="kpiTotalTempo" class="text-3xl font-black text-slate-800">0 h 0 min</span>
-                            <div class="flex items-center gap-3 mt-2">
+                            <div class="usage-periods">
                                 <span class="text-xs font-semibold bg-amber-50 text-amber-600 px-2.5 py-1 rounded-md border border-amber-100 flex items-center gap-1">
                                     <i class="fa-solid fa-sun"></i> Manhã: <span id="kpiTempoManha" class="font-bold">0 h 0 min</span>
                                 </span>
@@ -397,38 +397,7 @@
             </div>
         </div>
 
-        <!-- TAB 5: TABELA DE REGISTROS -->
-        <div id="tabContent-tabela" class="tab-content">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-                <div class="p-5 border-b border-slate-100">
-                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-list-ul text-slate-500"></i> Detalhamento de Registros
-                    </h2>
-                </div>
-                <div class="overflow-x-auto custom-scrollbar max-h-[600px]">
-                    <table class="w-full text-left border-collapse text-sm">
-                        <thead class="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider sticky top-0 z-10 shadow-sm text-xs">
-                            <tr>
-                                <th class="p-4 border-b border-slate-200 whitespace-nowrap">Data</th>
-                                <th class="p-4 border-b border-slate-200 whitespace-nowrap">Período</th>
-                                <th class="p-4 border-b border-slate-200 whitespace-nowrap">Local / Bloco</th>
-                                <th class="p-4 border-b border-slate-200 whitespace-nowrap">Roçadeira</th>
-                                <th class="p-4 border-b border-slate-200 whitespace-nowrap">Operador</th>
-                                <th class="p-4 border-b border-slate-200 whitespace-nowrap">Início</th>
-                                <th class="p-4 border-b border-slate-200 whitespace-nowrap">Fim</th>
-                                <th class="p-4 border-b border-slate-200 whitespace-nowrap text-right bg-blue-50/50">Duração</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody" class="divide-y divide-slate-100 text-slate-700">
-                            <!-- Injetado via JS -->
-                        </tbody>
-                    </table>
-                </div>
-                <div class="p-4 bg-slate-50 border-t border-slate-100 text-xs text-slate-500 font-medium">
-                    Exibindo <span id="tableTotalCount" class="font-bold text-slate-700">0</span> registros válidos.
-                </div>
-            </div>
-        </div>
+        <div id="tabContent-rendimento" class="tab-content space-y-6"><section class="yield-card"><h2>Rendimento · participação no tempo de uso</h2><p>Percentuais calculados sobre as horas registradas nos filtros acima. Sem dados de área roçada, estes indicadores representam uso, não produtividade por hectare.</p><div id="yieldSummary" class="yield-summary"></div></section><section class="yield-card"><h2>Uso das roçadeiras por bloco · %</h2><p>Cada bloco soma 100% do seu tempo registrado. As cores identificam os equipamentos.</p><div id="yieldBlocks"></div></section><section class="yield-card"><h2>Rendimento por colaborador · % das horas</h2><p>Participação de cada colaborador no total de horas selecionadas, com tempo e quantidade de usos.</p><div id="yieldPeople"></div></section></div>
 
         </div>
     </main>
@@ -540,7 +509,8 @@
 
     </div> <!-- Fechamento do MainApp Wrapper -->
 
-    <script src="assets/js/app.js"></script>
+    <script src="assets/js/rendimento.js?v=20261116"></script>
+    <script src="assets/js/app.js?v=20261116"></script>
     <script src="assets/js/dashboard.js"></script>
     <script src="assets/js/report.js"></script>
 </body>

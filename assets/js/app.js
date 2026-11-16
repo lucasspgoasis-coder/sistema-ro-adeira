@@ -229,7 +229,7 @@ function updateStatusBadge(type, customText = '') {
 function updateDashboard() {
     updateKPIs();
     renderCharts();
-    renderTable();
+    renderRendimento(validData);
 }
 
 function updateKPIs() {
@@ -675,7 +675,7 @@ function renderTable() {
 }
 
 function switchTab(tabName) {
-    const tabs = ['gerais', 'comparativo', 'manuseio', 'rocadeiras', 'tabela'];
+    const tabs = ['gerais', 'comparativo', 'manuseio', 'rocadeiras', 'rendimento'];
     
     tabs.forEach(t => {
         const content = document.getElementById(`tabContent-${t}`);
