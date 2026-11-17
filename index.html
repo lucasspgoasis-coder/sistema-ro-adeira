@@ -28,7 +28,7 @@
     <link rel="stylesheet" href="assets/css/base.css?v=20261116-visual-2">
     <link rel="stylesheet" href="assets/css/dashboard.css">
     <link rel="icon" type="image/png" href="assets/images/logo.png">
-<link rel="stylesheet" href="layout.css?v=20261117-charts-6"></head>
+<link rel="stylesheet" href="layout.css?v=20261117-five-7"></head>
 <body class="min-h-screen text-slate-800 antialiased selection:bg-brand-500 selection:text-white bg-slate-50">
 
     <!-- Main App Container (Standard page scrolling) -->
@@ -131,17 +131,17 @@
                     <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full -mr-8 -mt-8 z-0"></div>
                     <div class="relative z-10">
                         <div class="flex items-center gap-4 mb-3">
-                            <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl shadow-inner"><i class="fa-solid fa-stopwatch"></i></div>
+                            <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl shadow-inner"><svg class="metric-icon" viewBox="0 0 24 24" data-motion-icon="gauge" aria-hidden="true" focusable="false"><path d="M3 20a10 10 0 1 1 18 0H3ZM5 11l2 1M12 4v3M19 11l-2 1"/><path class="motion-needle" d="M12 16V8"/><circle cx="12" cy="16" r="2"/></svg></div>
                             <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Tempo Total de Uso</h3>
                         </div>
                         <div class="flex flex-col">
                             <span id="kpiTotalTempo" class="text-3xl font-black text-slate-800">0 h 0 min</span>
                             <div class="usage-periods">
                                 <span class="text-xs font-semibold bg-amber-50 text-amber-600 px-2.5 py-1 rounded-md border border-amber-100 flex items-center gap-1">
-                                    <i class="fa-solid fa-sun"></i> Manhã: <span id="kpiTempoManha" class="font-bold">0 h 0 min</span>
+                                    <svg class="metric-icon" viewBox="0 0 24 24" data-motion-icon="gauge" aria-hidden="true" focusable="false"><path d="M3 20a10 10 0 1 1 18 0H3ZM5 11l2 1M12 4v3M19 11l-2 1"/><path class="motion-needle" d="M12 16V8"/><circle cx="12" cy="16" r="2"/></svg> Manhã: <span id="kpiTempoManha" class="font-bold">0 h 0 min</span>
                                 </span>
                                 <span class="text-xs font-semibold bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-md border border-indigo-100 flex items-center gap-1">
-                                    <i class="fa-solid fa-moon"></i> Tarde: <span id="kpiTempoTarde" class="font-bold">0 h 0 min</span>
+                                    <svg class="metric-icon" viewBox="0 0 24 24" data-motion-icon="gauge" aria-hidden="true" focusable="false"><path d="M3 20a10 10 0 1 1 18 0H3ZM5 11l2 1M12 4v3M19 11l-2 1"/><path class="motion-needle" d="M12 16V8"/><circle cx="12" cy="16" r="2"/></svg> Tarde: <span id="kpiTempoTarde" class="font-bold">0 h 0 min</span>
                                 </span>
                             </div>
                         </div>
@@ -153,7 +153,7 @@
                     <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-bl-full -mr-8 -mt-8 z-0"></div>
                     <div class="relative z-10">
                         <div class="flex items-center gap-4 mb-4">
-                            <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-xl shadow-inner"><i class="fa-solid fa-map-location-dot"></i></div>
+                            <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-xl shadow-inner"><svg class="metric-icon" viewBox="0 0 24 24" data-motion-icon="network" aria-hidden="true" focusable="false"><path class="motion-network-flow" d="M12 8v4M5.5 16v-4h13v4"/><rect x="8" y="2" width="8" height="6" rx="2"/><rect x="2" y="16" width="7" height="6" rx="2"/><rect x="15" y="16" width="7" height="6" rx="2"/><circle class="motion-node node-a" cx="5.5" cy="19" r="1"/><circle class="motion-node node-b" cx="18.5" cy="19" r="1"/></svg></div>
                             <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Bloco com Mais Uso</h3>
                         </div>
                         <div class="flex flex-col">
@@ -168,7 +168,7 @@
                     <div class="absolute top-0 right-0 w-32 h-32 bg-brand-50 rounded-bl-full -mr-8 -mt-8 z-0"></div>
                     <div class="relative z-10">
                         <div class="flex items-center gap-4 mb-4">
-                            <div class="w-12 h-12 bg-brand-100 text-brand-600 rounded-xl flex items-center justify-center text-xl shadow-inner"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                            <div class="w-12 h-12 bg-brand-100 text-brand-600 rounded-xl flex items-center justify-center text-xl shadow-inner"><svg class="metric-icon" viewBox="0 0 24 24" data-motion-icon="tools" aria-hidden="true" focusable="false"><path d="m3 21 9-9M5 21l9-9M4 18l2 2"/><g class="motion-tool-head"><path d="M11 12a5 5 0 0 1-1-8l1 4 4 1 3-3a5 5 0 0 1-7 6Z"/></g><g class="motion-small-gear"><circle cx="18" cy="17" r="3"/><path d="M18 12v2M18 20v2M13 17h2M21 17h2M14.5 13.5l1.4 1.4M20.1 19.1l1.4 1.4M14.5 20.5l1.4-1.4M20.1 14.9l1.4-1.4"/></g></svg></div>
                             <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Roçadeira Mais Usada</h3>
                         </div>
                         <div class="flex flex-col">
@@ -198,7 +198,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <div class="flex items-center gap-3 mb-2">
-                        <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center"><i class="fa-solid fa-calendar-check"></i></div>
+                        <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center"><svg class="metric-icon" viewBox="0 0 24 24" data-motion-icon="calendar" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="17" rx="3"/><path d="M7 2v6M17 2v6M3 11h18M7 15h2M14 15h2"/><path class="motion-calendar-check" d="m7 18 3 2 6-6"/></svg></div>
                         <h3 class="text-xs font-bold text-slate-500 uppercase">Mês com Maior Uso</h3>
                     </div>
                     <span id="kpiCompTopMes" class="text-2xl font-bold text-slate-800">Nenhum</span>
@@ -206,7 +206,7 @@
                 </div>
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <div class="flex items-center gap-3 mb-2">
-                        <div class="w-10 h-10 bg-sky-100 text-sky-600 rounded-lg flex items-center justify-center"><i class="fa-solid fa-calculator"></i></div>
+                        <div class="w-10 h-10 bg-sky-100 text-sky-600 rounded-lg flex items-center justify-center"><svg class="metric-icon" viewBox="0 0 24 24" data-motion-icon="bars" aria-hidden="true" focusable="false"><path d="M3 21h19"/><rect class="motion-bar bar-a" x="4" y="11" width="4" height="8" rx="1"/><rect class="motion-bar bar-b" x="10" y="4" width="4" height="15" rx="1"/><rect class="motion-bar bar-c" x="16" y="8" width="4" height="11" rx="1"/></svg></div>
                         <h3 class="text-xs font-bold text-slate-500 uppercase">Média Mensal de Uso</h3>
                     </div>
                     <span id="kpiCompMediaMes" class="text-2xl font-bold text-slate-800">0 h 0 min</span>
@@ -214,7 +214,7 @@
                 </div>
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <div class="flex items-center gap-3 mb-2">
-                        <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center"><svg class="metric-icon" viewBox="0 0 24 24" data-motion-icon="gauge" aria-hidden="true" focusable="false"><path d="M3 20a10 10 0 1 1 18 0H3ZM5 11l2 1M12 4v3M19 11l-2 1"/><path class="motion-needle" d="M12 16V8"/><circle cx="12" cy="16" r="2"/></svg></div>
                         <h3 class="text-xs font-bold text-slate-500 uppercase">Média por Registro</h3>
                     </div>
                     <span id="kpiCompMediaRegistro" class="text-2xl font-bold text-slate-800">0 h 0 min</span>
@@ -250,7 +250,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <div class="flex items-center gap-3 mb-2">
-                        <div class="w-10 h-10 bg-sky-100 text-sky-600 rounded-lg flex items-center justify-center"><i class="fa-solid fa-user-gear"></i></div>
+                        <div class="w-10 h-10 bg-sky-100 text-sky-600 rounded-lg flex items-center justify-center"><svg class="metric-icon" viewBox="0 0 24 24" data-motion-icon="users" aria-hidden="true" focusable="false"><circle class="motion-person-head" cx="9" cy="7" r="3"/><path d="M2 21v-3a7 7 0 0 1 14 0v3M16 4a3 3 0 0 1 0 6M18 14a5 5 0 0 1 4 5v2"/><path class="motion-person-check" d="m5 18 2 2 5-5"/></svg></div>
                         <h3 class="text-xs font-bold text-slate-500 uppercase">Operador Principal</h3>
                     </div>
                     <span id="kpiManTopOp" class="text-2xl font-bold text-slate-800 truncate block">Nenhum</span>
@@ -258,7 +258,7 @@
                 </div>
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <div class="flex items-center gap-3 mb-2">
-                        <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center"><i class="fa-solid fa-sun"></i></div>
+                        <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center"><svg class="metric-icon" viewBox="0 0 24 24" data-motion-icon="gauge" aria-hidden="true" focusable="false"><path d="M3 20a10 10 0 1 1 18 0H3ZM5 11l2 1M12 4v3M19 11l-2 1"/><path class="motion-needle" d="M12 16V8"/><circle cx="12" cy="16" r="2"/></svg></div>
                         <h3 class="text-xs font-bold text-slate-500 uppercase">Total Período Manhã</h3>
                     </div>
                     <span id="kpiManTotalManha" class="text-2xl font-bold text-slate-800">0 h 0 min</span>
@@ -266,7 +266,7 @@
                 </div>
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <div class="flex items-center gap-3 mb-2">
-                        <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center"><i class="fa-solid fa-moon"></i></div>
+                        <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center"><svg class="metric-icon" viewBox="0 0 24 24" data-motion-icon="gauge" aria-hidden="true" focusable="false"><path d="M3 20a10 10 0 1 1 18 0H3ZM5 11l2 1M12 4v3M19 11l-2 1"/><path class="motion-needle" d="M12 16V8"/><circle cx="12" cy="16" r="2"/></svg></div>
                         <h3 class="text-xs font-bold text-slate-500 uppercase">Total Período Tarde</h3>
                     </div>
                     <span id="kpiManTotalTarde" class="text-2xl font-bold text-slate-800">0 h 0 min</span>
@@ -309,7 +309,7 @@
                 <!-- KPI 1 -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 relative overflow-hidden">
                     <div class="flex items-center gap-3 mb-2">
-                        <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center text-lg"><i class="fa-solid fa-award"></i></div>
+                        <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center text-lg"><svg class="metric-icon" viewBox="0 0 24 24" data-motion-icon="bars" aria-hidden="true" focusable="false"><path d="M3 21h19"/><rect class="motion-bar bar-a" x="4" y="11" width="4" height="8" rx="1"/><rect class="motion-bar bar-b" x="10" y="4" width="4" height="15" rx="1"/><rect class="motion-bar bar-c" x="16" y="8" width="4" height="11" rx="1"/></svg></div>
                         <h3 class="text-xs font-bold text-slate-500 uppercase">Melhor Rendimento</h3>
                     </div>
                     <span id="kpiRocMelhorRendimento" class="text-xl font-bold text-slate-800 block truncate">Nenhuma</span>
@@ -319,7 +319,7 @@
                 <!-- KPI 2 -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 relative overflow-hidden">
                     <div class="flex items-center gap-3 mb-2">
-                        <div class="w-10 h-10 bg-brand-100 text-brand-600 rounded-lg flex items-center justify-center text-lg"><i class="fa-solid fa-map-pin"></i></div>
+                        <div class="w-10 h-10 bg-brand-100 text-brand-600 rounded-lg flex items-center justify-center text-lg"><svg class="metric-icon" viewBox="0 0 24 24" data-motion-icon="network" aria-hidden="true" focusable="false"><path class="motion-network-flow" d="M12 8v4M5.5 16v-4h13v4"/><rect x="8" y="2" width="8" height="6" rx="2"/><rect x="2" y="16" width="7" height="6" rx="2"/><rect x="15" y="16" width="7" height="6" rx="2"/><circle class="motion-node node-a" cx="5.5" cy="19" r="1"/><circle class="motion-node node-b" cx="18.5" cy="19" r="1"/></svg></div>
                         <h3 class="text-xs font-bold text-slate-500 uppercase">Mais Usada no Bloco Líder</h3>
                     </div>
                     <span id="kpiRocTopBlocoEquip" class="text-xl font-bold text-slate-800 block truncate">Nenhuma</span>
@@ -329,7 +329,7 @@
                 <!-- KPI 3 -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 relative overflow-hidden">
                     <div class="flex items-center gap-3 mb-2">
-                        <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center text-lg"><i class="fa-solid fa-calculator"></i></div>
+                        <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center text-lg"><svg class="metric-icon" viewBox="0 0 24 24" data-motion-icon="bars" aria-hidden="true" focusable="false"><path d="M3 21h19"/><rect class="motion-bar bar-a" x="4" y="11" width="4" height="8" rx="1"/><rect class="motion-bar bar-b" x="10" y="4" width="4" height="15" rx="1"/><rect class="motion-bar bar-c" x="16" y="8" width="4" height="11" rx="1"/></svg></div>
                         <h3 class="text-xs font-bold text-slate-500 uppercase">Média Geral por Roçadeira</h3>
                     </div>
                     <span id="kpiRocMediaGeral" class="text-xl font-bold text-slate-800 block">0 h 0 min</span>
@@ -339,7 +339,7 @@
                 <!-- KPI 4 -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 relative overflow-hidden">
                     <div class="flex items-center gap-3 mb-2">
-                        <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-lg"><i class="fa-solid fa-cubes-stacked"></i></div>
+                        <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-lg"><svg class="metric-icon" viewBox="0 0 24 24" data-motion-icon="bars" aria-hidden="true" focusable="false"><path d="M3 21h19"/><rect class="motion-bar bar-a" x="4" y="11" width="4" height="8" rx="1"/><rect class="motion-bar bar-b" x="10" y="4" width="4" height="15" rx="1"/><rect class="motion-bar bar-c" x="16" y="8" width="4" height="11" rx="1"/></svg></div>
                         <h3 class="text-xs font-bold text-slate-500 uppercase">Roçadeiras Ativas</h3>
                     </div>
                     <span id="kpiRocTotalAtivas" class="text-xl font-bold text-slate-800 block">0</span>
@@ -485,5 +485,5 @@
     <script src="assets/js/app.js?v=20261116-visual-2"></script>
     <script src="assets/js/dashboard.js"></script>
     <script src="assets/js/report.js"></script>
-<script src="layout.js?v=20261117-charts-6"></script></body>
+<script src="layout.js?v=20261117-five-7"></script></body>
 </html>
