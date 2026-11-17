@@ -28,7 +28,7 @@
     <link rel="stylesheet" href="assets/css/base.css?v=20261116-visual-2">
     <link rel="stylesheet" href="assets/css/dashboard.css">
     <link rel="icon" type="image/png" href="assets/images/logo.png">
-<link rel="stylesheet" href="layout.css?v=20261117-icons-3"></head>
+<link rel="stylesheet" href="layout.css?v=20261117-motion-4"></head>
 <body class="min-h-screen text-slate-800 antialiased selection:bg-brand-500 selection:text-white bg-slate-50">
 
     <!-- Main App Container (Standard page scrolling) -->
@@ -182,15 +182,11 @@
             <!-- Gráficos Dados Gerais - Empilhados Verticalmente -->
             <div class="grid grid-cols-1 gap-6">
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
-                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4 border-b border-slate-100 pb-4">
-                        <i class="fa-solid fa-chart-column text-emerald-500"></i> Tempo por Bloco (Alfabética)
-                    </h2>
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4 border-b border-slate-100 pb-4" data-chart-heading="true"><span class="chart-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 20V10h4v10M10 20V4h4v16M16 20v-8h4v8M2 20h20"/></svg></span>Tempo por Bloco (Alfabética)</h2>
                     <div class="relative h-[420px] w-full"><canvas id="chartBloco"></canvas></div>
                 </div>
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
-                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4 border-b border-slate-100 pb-4">
-                        <i class="fa-solid fa-chart-bar text-brand-500"></i> Tempo por Roçadeira (Alfabética)
-                    </h2>
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4 border-b border-slate-100 pb-4" data-chart-heading="true"><span class="chart-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 20V10h4v10M10 20V4h4v16M16 20v-8h4v8M2 20h20"/></svg></span>Tempo por Roçadeira (Alfabética)</h2>
                     <div class="relative h-[420px] w-full"><canvas id="chartEquipamento"></canvas></div>
                 </div>
             </div>
@@ -231,9 +227,7 @@
                 <!-- Horas por Mês -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <div class="border-b border-slate-100 pb-4 mb-4">
-                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-calendar-days text-purple-500"></i> Total de Horas por Mês
-                        </h2>
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2" data-chart-heading="true"><span class="chart-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><rect x="3" y="5" width="18" height="17" rx="3"/><path d="M7 2v6M17 2v6M3 11h18M7 15h3M14 15h3M7 18h3"/></svg></span>Total de Horas por Mês</h2>
                         <p class="text-xs text-slate-500 mt-1">Evolução do tempo total de uso mensal</p>
                     </div>
                     <div class="relative h-[420px] w-full"><canvas id="chartMes"></canvas></div>
@@ -242,9 +236,7 @@
                 <!-- Uso de Roçadeiras por Semana -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <div class="border-b border-slate-100 pb-4 mb-4">
-                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-layer-group text-brand-500"></i> Uso de Roçadeiras por Semana
-                        </h2>
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2" data-chart-heading="true"><span class="chart-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><rect x="3" y="5" width="18" height="17" rx="3"/><path d="M7 2v6M17 2v6M3 11h18M7 15h3M14 15h3M7 18h3"/></svg></span>Uso de Roçadeiras por Semana</h2>
                         <p class="text-xs text-slate-500 mt-1">Tempo total segmentado por roçadeira e demonstrado por semana</p>
                     </div>
                     <div class="relative h-[420px] w-full"><canvas id="chartBlocoSemana"></canvas></div>
@@ -286,9 +278,7 @@
                 <!-- Operadores com mais uso -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <div class="border-b border-slate-100 pb-4 mb-4">
-                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-users text-sky-500"></i> Ranking de Operadores
-                        </h2>
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2" data-chart-heading="true"><span class="chart-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><circle cx="9" cy="7" r="3"/><path d="M2 21v-3a7 7 0 0 1 14 0v3M16 4a3 3 0 0 1 0 6M18 14a5 5 0 0 1 4 5v2"/></svg></span>Ranking de Operadores</h2>
                         <p class="text-xs text-slate-500 mt-1">Pessoas que mais utilizaram a roçadeira (Ordem Decrescente)</p>
                     </div>
                     <div class="relative h-[420px] w-full"><canvas id="chartOperador"></canvas></div>
@@ -297,9 +287,7 @@
                 <!-- Manhã vs Tarde (Por Mês) -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <div class="border-b border-slate-100 pb-4 mb-4">
-                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-cloud-sun text-amber-500"></i> Manhã vs Tarde (Por Mês)
-                        </h2>
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2" data-chart-heading="true"><span class="chart-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><rect x="3" y="5" width="18" height="17" rx="3"/><path d="M7 2v6M17 2v6M3 11h18M7 15h3M14 15h3M7 18h3"/></svg></span>Manhã vs Tarde (Por Mês)</h2>
                     </div>
                     <div class="relative h-[420px] w-full"><canvas id="chartPeriodoMes"></canvas></div>
                 </div>
@@ -307,9 +295,7 @@
                 <!-- Manhã vs Tarde (Por Semana) -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <div class="border-b border-slate-100 pb-4 mb-4">
-                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-calendar-week text-indigo-500"></i> Manhã vs Tarde (Por Semana)
-                        </h2>
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2" data-chart-heading="true"><span class="chart-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><rect x="3" y="5" width="18" height="17" rx="3"/><path d="M7 2v6M17 2v6M3 11h18M7 15h3M14 15h3M7 18h3"/></svg></span>Manhã vs Tarde (Por Semana)</h2>
                     </div>
                     <div class="relative h-[420px] w-full"><canvas id="chartPeriodoSemana"></canvas></div>
                 </div>
@@ -366,9 +352,7 @@
                 <!-- Gráfico 1: Roçadeiras mais usadas por Bloco -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <div class="border-b border-slate-100 pb-4 mb-4">
-                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-chart-column text-brand-500"></i> Roçadeiras Mais Usadas por Bloco
-                        </h2>
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2" data-chart-heading="true"><span class="chart-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 20V10h4v10M10 20V4h4v16M16 20v-8h4v8M2 20h20"/></svg></span>Roçadeiras Mais Usadas por Bloco</h2>
                         <p class="text-xs text-slate-500 mt-1">Distribuição de horas de uso de cada roçadeira segmentada por bloco de trabalho</p>
                     </div>
                     <div class="relative h-[450px] w-full"><canvas id="chartRocBloco"></canvas></div>
@@ -377,9 +361,7 @@
                 <!-- Gráfico 2: Rendimento por Roçadeira (Melhor Rendimento em Destaque) -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
                     <div class="border-b border-slate-100 pb-4 mb-4">
-                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-gauge-high text-emerald-500"></i> Rendimento por Roçadeira
-                        </h2>
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2" data-chart-heading="true"><span class="chart-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M3 3v18h18M5 16l5-5 4 3 7-9M16 5h5v5"/></svg></span>Rendimento por Roçadeira</h2>
                         <p class="text-xs text-slate-500 mt-1">Comparativo de tempo médio por uso e tempo total para identificar o melhor rendimento por equipamento</p>
                     </div>
                     <div class="relative h-[450px] w-full"><canvas id="chartRocRendimento"></canvas></div>
@@ -387,7 +369,7 @@
             </div>
         </div>
 
-        <div id="tabContent-rendimento" class="tab-content space-y-6"><section class="yield-card"><h2>Rendimento · participação no tempo de uso</h2><p>Percentuais calculados sobre as horas registradas nos filtros acima. Sem dados de área roçada, estes indicadores representam uso, não produtividade por hectare.</p><div id="yieldSummary" class="yield-summary"></div></section><section class="yield-card"><h2>Uso das roçadeiras por bloco · %</h2><p>Cada bloco soma 100% do seu tempo registrado. As cores identificam os equipamentos.</p><div id="yieldBlocks"></div></section><section class="yield-card"><h2>Rendimento por colaborador · % das horas</h2><p>Participação de cada colaborador no total de horas selecionadas, com tempo e quantidade de usos.</p><div id="yieldPeople"></div></section></div>
+        <div id="tabContent-rendimento" class="tab-content space-y-6"><section class="yield-card"><h2>Rendimento · participação no tempo de uso</h2><p>Percentuais calculados sobre as horas registradas nos filtros acima. Sem dados de área roçada, estes indicadores representam uso, não produtividade por hectare.</p><div id="yieldSummary" class="yield-summary"></div></section><section class="yield-card"><h2 data-chart-heading="true"><span class="chart-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 20V10h4v10M10 20V4h4v16M16 20v-8h4v8M2 20h20"/></svg></span>Uso das roçadeiras por bloco · %</h2><p>Cada bloco soma 100% do seu tempo registrado. As cores identificam os equipamentos.</p><div id="yieldBlocks"></div></section><section class="yield-card"><h2 data-chart-heading="true"><span class="chart-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><circle cx="9" cy="7" r="3"/><path d="M2 21v-3a7 7 0 0 1 14 0v3M16 4a3 3 0 0 1 0 6M18 14a5 5 0 0 1 4 5v2"/></svg></span>Rendimento por colaborador · % das horas</h2><p>Participação de cada colaborador no total de horas selecionadas, com tempo e quantidade de usos.</p><div id="yieldPeople"></div></section></div>
 
         </div>
     </main>
