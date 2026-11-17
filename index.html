@@ -28,7 +28,7 @@
     <link rel="stylesheet" href="assets/css/base.css?v=20261116-visual-2">
     <link rel="stylesheet" href="assets/css/dashboard.css">
     <link rel="icon" type="image/png" href="assets/images/logo.png">
-<link rel="stylesheet" href="layout.css?v=20261117-fluid-1"></head>
+<link rel="stylesheet" href="layout.css?v=20261117-icons-3"></head>
 <body class="min-h-screen text-slate-800 antialiased selection:bg-brand-500 selection:text-white bg-slate-50">
 
     <!-- Main App Container (Standard page scrolling) -->
@@ -70,21 +70,11 @@
         <div class="bg-slate-950 border-t border-slate-800">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <nav class="flex space-x-2 sm:space-x-4 overflow-x-auto py-3 custom-scrollbar text-sm font-medium">
-                    <button id="tabBtn-gerais" onclick="switchTab('gerais')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap bg-brand-600 text-white shadow-md">
-                        <i class="fa-solid fa-chart-pie text-brand-100"></i> <span>Dados Gerais</span>
-                    </button>
-                    <button id="tabBtn-comparativo" onclick="switchTab('comparativo')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:bg-slate-800 hover:text-white">
-                        <i class="fa-solid fa-scale-balanced"></i> <span>Comparativo</span>
-                    </button>
-                    <button id="tabBtn-manuseio" onclick="switchTab('manuseio')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:bg-slate-800 hover:text-white">
-                        <i class="fa-solid fa-people-carry-box"></i> <span>Manuseio</span>
-                    </button>
-                    <button id="tabBtn-rocadeiras" onclick="switchTab('rocadeiras')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:bg-slate-800 hover:text-white">
-                        <i class="fa-solid fa-tractor"></i> <span>Roçadeiras</span>
-                    </button>
-                    <button id="tabBtn-rendimento" onclick="switchTab('rendimento')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:bg-slate-800 hover:text-white">
-                        <i class="fa-solid fa-table-list"></i> <span>Rendimento</span>
-                    </button>
+                    <button id="tabBtn-gerais" onclick="switchTab('gerais')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap bg-brand-600 text-white shadow-md"><svg class="tab-icon tab-icon-gauge" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 19a10 10 0 1 1 18 0H3ZM12 15l5-7M6 10l1 1M12 5v2M18 10l-1 1"/></svg><span>Dados Gerais</span></button>
+                    <button id="tabBtn-comparativo" onclick="switchTab('comparativo')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:bg-slate-800 hover:text-white"><svg class="tab-icon tab-icon-compare" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4v16M19 4v16M2 8l3-4 3 4M16 16l3 4 3-4M9 8h6M9 16h6"/></svg><span>Comparativo</span></button>
+                    <button id="tabBtn-manuseio" onclick="switchTab('manuseio')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:bg-slate-800 hover:text-white"><svg class="tab-icon tab-icon-users" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="7" r="3"/><path d="M2 21v-3a7 7 0 0 1 14 0v3M16 4a3 3 0 0 1 0 6M18 14a5 5 0 0 1 4 5v2"/></svg><span>Manuseio</span></button>
+                    <button id="tabBtn-rocadeiras" onclick="switchTab('rocadeiras')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:bg-slate-800 hover:text-white"><svg class="tab-icon tab-icon-mower" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="19" r="2"/><path d="M4 17v-5h15l3 5H4ZM8 12V8h7v4M17 12 20 3h3"/></svg><span>Roçadeiras</span></button>
+                    <button id="tabBtn-rendimento" onclick="switchTab('rendimento')" class="tab-btn px-4 py-2 rounded-lg transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:bg-slate-800 hover:text-white"><svg class="tab-icon tab-icon-trend" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 3v18h18M5 16l5-5 4 3 7-9M16 5h5v5"/></svg><span>Rendimento</span></button>
                 </nav>
             </div>
         </div>
